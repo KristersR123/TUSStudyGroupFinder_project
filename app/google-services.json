@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "642649542484",
+    "project_id": "tusstudygroupfinder",
+    "storage_bucket": "tusstudygroupfinder.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:642649542484:android:080063b4a1b3b8b2d002c1",
+        "android_client_info": {
+          "package_name": "com.example.tusstudygroupfinder_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNVCEXuw4CNdnQADm1kDaQyyYsc8-e50E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,3 @@
+Figma to Jetpack Compose: Youtube - Asad Lodhi: https://www.youtube.com/watch?v=jQfk8rUg-rM&t=33s&ab_channel=AsadLodhi
+
+Build Login & Register UI with Jetpack Compose : Youtube - Ahmed Guedmioui : https://www.youtube.com/watch?v=CWOMHxpePMY&ab_channel=AhmedGuedmioui

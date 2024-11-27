@@ -7,6 +7,7 @@
   - Sign Up Screen ✔️
   - Home Screen ✔️
   - Imported above from old project along with firebase authentication ✔️
+  - Initialised Github for my project ✔️
 
 - WORK IN PROGRESS (:heavy_multiplication_x:)
   - Style the interface more with dropdown on "Your Study Groups"

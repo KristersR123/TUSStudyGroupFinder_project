@@ -8,6 +8,7 @@
   - Home Screen ✔️
   - Imported above from old project along with firebase authentication ✔️
   - Initialised Github for my project ✔️
+  - Changed Title and Welcome message in Main Screen ✔️
 
 - WORK IN PROGRESS (:heavy_multiplication_x:)
   - Style the interface more with dropdown on "Your Study Groups"

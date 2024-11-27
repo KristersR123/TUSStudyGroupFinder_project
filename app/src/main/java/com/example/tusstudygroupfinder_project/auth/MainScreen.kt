@@ -70,7 +70,7 @@ fun MainScreen(navController: NavController, vm: IgViewModel) {
             Spacer(modifier = Modifier.height(400.dp))
 
             Text(
-                text = "TUS Campus Connect",
+                text = "TUS Study Group Finder",
                 textAlign = TextAlign.Start,
                 fontSize = 35.sp,
                 textDecoration = TextDecoration.None,
@@ -103,7 +103,7 @@ fun MainScreen(navController: NavController, vm: IgViewModel) {
 
 
             Text(
-                text = "Experience our new app TUS Campus Connect together",
+                text = "Experience studying together using our new app TUS Study Group Finder",
                 textAlign = TextAlign.Start,
                 fontSize = 18.sp,
                 textDecoration = TextDecoration.None,

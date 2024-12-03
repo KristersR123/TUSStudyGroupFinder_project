@@ -2,6 +2,7 @@ package com.example.tusstudygroupfinder_project.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,11 +16,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -70,7 +76,7 @@ fun SignupScreen(navController: NavController, vm: IgViewModel) {
 
 
     Column(
-        modifier = Modifier.fillMaxSize().background(Color(0xFF7E6E44)),
+        modifier = Modifier.fillMaxSize().background(Color(0xFF7E6E44)).verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -312,54 +318,63 @@ fun SignupScreen(navController: NavController, vm: IgViewModel) {
             )
         )
         Spacer(modifier = Modifier.height(20.dp))
+        // OutlinedTextField for displaying the selected course
+        OutlinedTextField(
+            value = selectedCourse,
+            onValueChange = { /* Handle changes if necessary */ },
+            label = { Text("Select Course") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            readOnly = true, // Make the field read-only
+            colors = TextFieldDefaults.textFieldColors(
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                containerColor = Color(0x30FFFFFF),
+                focusedLeadingIconColor = Color.White,
+                unfocusedLeadingIconColor = Color.White,
+                focusedLabelColor = Color.White,
+                unfocusedLabelColor = Color.White,
+                cursorColor = Color.Red,
+                focusedTrailingIconColor = Color.White,
+                unfocusedTrailingIconColor = Color.White
+            ),
+            trailingIcon = {
+                if (selectedCourse.isNotEmpty()) {
+                    IconButton(
+                        onClick = {
+                            expanded = !expanded
+                        },
+                        modifier = Modifier.clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { }
+                    ) {
+                        Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Dropdown")
+                    }
+                }
+            }
+        )
 //        // Dropdown menu for selecting courses
-//        DropdownMenu(
-//            expanded = expanded,
-//            onDismissRequest = { expanded = false },
-//            modifier = Modifier.fillMaxWidth()
-//        ) {
-//            courses.forEach { course ->
-//                DropdownMenuItem(onClick = {
-//                    selectedCourse = course
-//                    expanded = false
-//                }) {
-//                    Text(text = course)
-//                }
-//            }
-//        }
-//        // OutlinedTextField for displaying the selected course
-//        OutlinedTextField(
-//            value = selectedCourse,
-//            onValueChange = { /* Handle changes if necessary */ },
-//            label = { Text("Course") },
-//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-//            singleLine = true,
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(vertical = 8.dp),
-//            readOnly = true, // Make the field read-only
-//            colors = TextFieldDefaults.textFieldColors(
-//                textColor = Color.White, // Set text color
-//                cursorColor = Color.Red,
-//                focusedIndicatorColor = Color.White,
-//                unfocusedIndicatorColor = Color.White,
-//            ),
-//            trailingIcon = {
-//                if (selectedCourse.isNotEmpty()) {
-//                    IconButton(
-//                        onClick = {
-//                            expanded = true
-//                        },
-//                        modifier = Modifier.clickable(
-//                            indication = null,
-//                            interactionSource = remember { MutableInteractionSource() }
-//                        ) { }
-//                    ) {
-//                        Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null)
-//                    }
-//                }
-//            }
-//        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            courses.forEach { course ->
+                DropdownMenuItem(onClick = {
+                    selectedCourse = course
+                    expanded = false
+                }) {
+                    Text(text = course)
+                }
+            }
+        }
+
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         Box(
             modifier = Modifier

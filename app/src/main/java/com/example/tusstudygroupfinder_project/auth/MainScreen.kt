@@ -49,7 +49,7 @@ fun MainScreen(navController: NavController, vm: IgViewModel) {
             contentDescription = "TUS Campus Image",
             modifier = Modifier
                 .width(440.dp)
-                .height(390.dp)
+                .height(300.dp)
                 .clip(
                     RoundedCornerShape(
                         topStart = 0.dp,
@@ -67,7 +67,7 @@ fun MainScreen(navController: NavController, vm: IgViewModel) {
                 .padding(16.dp)
         ) {
 
-            Spacer(modifier = Modifier.height(400.dp))
+            Spacer(modifier = Modifier.height(320.dp))
 
             Text(
                 text = "TUS Study Group Finder",

@@ -21,6 +21,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -45,6 +46,10 @@ import com.example.tusstudygroupfinder_project.R
 
 @Composable
 fun HomeScreen(navController: NavController, vm: IgViewModel) {
+    // Call loadUserDetails when the HomeScreen is displayed
+    LaunchedEffect(Unit) {
+        vm.loadUserDetails()
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -75,7 +80,7 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
                         fontWeight = FontWeight.Medium
                     )
                     Text(
-                        text = "Welcome Back, User!",
+                        text = "Welcome Back, ${vm.userName}!",
                         color = Color.White,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Normal

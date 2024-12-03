@@ -105,6 +105,22 @@ class IgViewModel @Inject constructor(
     }
 
 
+    // Function to load user details
+    fun loadUserDetails() {
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            viewModelScope.launch {
+                try {
+                    val docSnapshot = fireStore.collection("users").document(userId).get().await()
+                    userName = docSnapshot.getString("username") ?: ""
+                } catch (e: Exception) {
+                    // Handle exceptions, e.g., show an error message
+                }
+            }
+        }
+    }
+
+
     // Function to store user information in Firestore
     private suspend fun storeUserInFirestore(
         userId: String,

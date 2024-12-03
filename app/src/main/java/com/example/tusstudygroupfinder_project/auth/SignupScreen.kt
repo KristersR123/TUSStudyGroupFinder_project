@@ -1,9 +1,7 @@
 package com.example.tusstudygroupfinder_project.auth
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,20 +13,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -43,15 +34,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,11 +53,13 @@ import com.example.tusstudygroupfinder_project.R
 fun SignupScreen(navController: NavController, vm: IgViewModel) {
     val empty by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var cpassword by remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
     var cpasswordVisibility by remember { mutableStateOf(false) }
     var errorE by remember { mutableStateOf(false) }
+    var errorU by remember { mutableStateOf(false) }
     var errorP by remember { mutableStateOf(false) }
     var errorCP by remember { mutableStateOf(false) }
     var errorC by remember { mutableStateOf(false) }
@@ -78,70 +68,23 @@ fun SignupScreen(navController: NavController, vm: IgViewModel) {
     var expanded by remember { mutableStateOf(false) }
     var selectedCourse by remember { mutableStateOf(courses.first()) }
 
-    Image(
-        painter = painterResource(id = R.drawable.login_background),
-        contentDescription = null,
-        contentScale = ContentScale.FillBounds,
-        modifier = Modifier.fillMaxSize()
-    )
+
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().background(Color(0xFF7E6E44)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if (vm.inProgress.value) {
-            CircularProgressIndicator()
-        }
-    }
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 150.dp)
-            .verticalScroll(
-                rememberScrollState()
-            )
-    ) {
-        Text(
-            text = "User Signup",
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            fontSize = 40.sp
-        )
-        Spacer(modifier = Modifier.height(50.dp))
-        if (errorE) {
+        if (errorU) {
             Text(
-                text = "Enter email",
+                text = "Enter a username",
                 color = Color.Red,
                 modifier = Modifier.padding(end = 100.dp)
             )
         }
         TextField(
-            value = email,
-            onValueChange = {
-                email = it
-            },
-            label = {
-                Text(text = "Email")
-            },
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_person_24),
-                    contentDescription = null
-                )
-            },
-            trailingIcon = {
-                if (email.isNotEmpty()) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_close_24),
-                        contentDescription = null,
-                        Modifier.clickable { email = empty }
-                    )
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next
-            ),
+            value = username,
+            onValueChange = { username = it },
+            label = { Text(text = "Username") },
             singleLine = true,
             textStyle = TextStyle(
                 color = Color.White,
@@ -165,7 +108,54 @@ fun SignupScreen(navController: NavController, vm: IgViewModel) {
                 unfocusedTrailingIconColor = Color.White
             )
         )
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(20.dp))
+
+        if (errorE) {
+            Text(
+                text = "Enter email",
+                color = Color.Red,
+                modifier = Modifier.padding(end = 100.dp)
+            )
+        }
+        TextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text(text = "Email") },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_person_24),
+                    contentDescription = null
+                )
+            },
+            trailingIcon = {
+                if (email.isNotEmpty()) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_close_24),
+                        contentDescription = null,
+                        Modifier.clickable { email = empty }
+                    )
+                }
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            singleLine = true,
+            textStyle = TextStyle(color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp),
+            shape = RoundedCornerShape(50.dp),
+            modifier = Modifier.width(300.dp).height(60.dp),
+            colors = TextFieldDefaults.textFieldColors(
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                containerColor = Color(0x30FFFFFF),
+                focusedLeadingIconColor = Color.White,
+                unfocusedLeadingIconColor = Color.White,
+                focusedLabelColor = Color.White,
+                unfocusedLabelColor = Color.White,
+                cursorColor = Color.Red,
+                focusedTrailingIconColor = Color.White,
+                unfocusedTrailingIconColor = Color.White
+            )
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+
         if (errorP) {
             Text(
                 text = "Enter Password",
@@ -243,7 +233,8 @@ fun SignupScreen(navController: NavController, vm: IgViewModel) {
                 unfocusedTrailingIconColor = Color.White
             )
         )
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(20.dp))
+
         if (errorCP) {
             Text(
                 text = "Password Doesn't Match",
@@ -320,21 +311,22 @@ fun SignupScreen(navController: NavController, vm: IgViewModel) {
                 unfocusedTrailingIconColor = Color.White
             )
         )
-        // Dropdown menu for selecting courses
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            courses.forEach { course ->
-                DropdownMenuItem(onClick = {
-                    selectedCourse = course
-                    expanded = false
-                }) {
-                    Text(text = course)
-                }
-            }
-        }
+        Spacer(modifier = Modifier.height(20.dp))
+//        // Dropdown menu for selecting courses
+//        DropdownMenu(
+//            expanded = expanded,
+//            onDismissRequest = { expanded = false },
+//            modifier = Modifier.fillMaxWidth()
+//        ) {
+//            courses.forEach { course ->
+//                DropdownMenuItem(onClick = {
+//                    selectedCourse = course
+//                    expanded = false
+//                }) {
+//                    Text(text = course)
+//                }
+//            }
+//        }
 //        // OutlinedTextField for displaying the selected course
 //        OutlinedTextField(
 //            value = selectedCourse,
@@ -369,7 +361,6 @@ fun SignupScreen(navController: NavController, vm: IgViewModel) {
 //            }
 //        )
 
-        Spacer(modifier = Modifier.height(50.dp))
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(50.dp))
@@ -381,36 +372,48 @@ fun SignupScreen(navController: NavController, vm: IgViewModel) {
         ) {
             Button(
                 onClick = {
-                    if (email.isNotEmpty()) {
-                        errorE = false
-                        if (password.isNotEmpty()) {
-                            errorP = false
-                            if (cpassword.isNotEmpty()) {
-                                errorC = false
-                                if (password == cpassword) {
-                                    errorCP = false
-                                    vm.onSignup(
-                                        email,
-                                        password,
-                                        selectedCourse
-                                    )
-                                } else {
-                                    errorCP = true
-                                }
-                            } else {
-                                errorC = true
-                            }
-                        } else {
-                            errorP = true
-                        }
-                    } else {
+                    var isValid = true
+
+                    // Clear previous errors
+                    errorE = false
+                    errorP = false
+                    errorCP = false
+                    errorC = false
+                    errorU = false
+
+                    if (username.isEmpty()) {
+                        errorU = true
+                        isValid = false
+                    }
+                    if (email.isEmpty()) {
                         errorE = true
+                        isValid = false
+                    }
+                    if (password.isEmpty()) {
+                        errorP = true
+                        isValid = false
+                    }
+                    if (password.length < 6) {
+                        plength = true
+                        isValid = false
+                    }
+                    if (cpassword.isEmpty()) {
+                        errorC = true
+                        isValid = false
+                    }
+                    if (password != cpassword) {
+                        errorCP = true
+                        isValid = false
+                    }
+
+
+                    if (isValid) {
+                        vm.onSignup(email, password, selectedCourse, username)
                     }
                 },
-                colors = ButtonDefaults.buttonColors(
-                    Color.Transparent
-                ),
-                modifier = Modifier.width(200.dp)
+                colors = ButtonDefaults.buttonColors(Color.Transparent),
+                modifier = Modifier
+                    .width(200.dp)
                     .background(
                         brush = Brush.horizontalGradient(
                             colors = listOf(Color(0xff554800), Color(0xff554800))
@@ -424,47 +427,49 @@ fun SignupScreen(navController: NavController, vm: IgViewModel) {
                     fontWeight = FontWeight.Bold
                 )
             }
+
             if (vm.signedIn.value) {
                 navController.navigate(DestinationScreen.Home.route)
+                vm.signedIn.value = false  // Reset the signedIn state after navigation
             }
-            vm.signedIn.value = false
         }
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(50.dp))
-                .background(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(Color(0xFFFFD700), Color(0xFFFFD700))
-                    )
-                )
-        ) {
-            Button(
-                onClick = {
-                    navController.popBackStack()
-                },
-                colors = ButtonDefaults.buttonColors(
-                    Color.Transparent
-                ),
+           Box(
                 modifier = Modifier
-                    .width(300.dp)
+                    .clip(RoundedCornerShape(50.dp))
                     .background(
                         brush = Brush.horizontalGradient(
-                            colors = listOf(Color(0xff554800), Color(0xff554800))
+                            colors = listOf(Color(0xFFFFD700), Color(0xFFFFD700))
                         )
                     )
             ) {
-                Text(
-                    text = "Back",
-                    color = Color.Black,
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Button(
+                    onClick = {
+                        navController.popBackStack()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        Color.Transparent
+                    ),
+                    modifier = Modifier
+                        .width(300.dp)
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(Color(0xff554800), Color(0xff554800))
+                            )
+                        )
+                ) {
+                    Text(
+                        text = "Back",
+                        color = Color.Black,
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }
-}
+
 
 @Composable
 fun DropdownMenuItem(

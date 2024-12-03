@@ -91,23 +91,7 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
                     .background(Color(0xFF7E6E44))
             ) {
 
-//        Image(
-//            painter = painterResource(id = R.drawable.tus_image), // Image resource
-//            contentDescription = "TUS Campus Image",
-//            contentScale = ContentScale.Crop, // Ensures the image scales appropriately
-//            modifier = Modifier
-//                .fillMaxWidth() // Makes the image span the full width of the screen
-//                .height(300.dp) // You can adjust the height as needed
-//                .clip(
-//                    RoundedCornerShape(
-//                        topStart = 0.dp,
-//                        topEnd = 0.dp,
-//                        bottomStart = 0.dp,
-//                        bottomEnd = 0.dp
-//                    )
-//                )
-//                .background(Color.Transparent)
-//        )
+
 
                 Column(
                     modifier = Modifier

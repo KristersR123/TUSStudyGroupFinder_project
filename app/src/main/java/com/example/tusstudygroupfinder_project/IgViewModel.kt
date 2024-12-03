@@ -1,5 +1,6 @@
 package com.example.tusstudygroupfinder_project
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -32,7 +33,7 @@ class IgViewModel @Inject constructor(
 
 
     // Function to handle user signup
-    fun onSignup(email: String, pass: String, course: String) {
+    fun onSignup(email: String, pass: String, course: String, username: String) {
         viewModelScope.launch {
             inProgress.value = true
 
@@ -47,7 +48,7 @@ class IgViewModel @Inject constructor(
                     // Store user information in Firestore
                     val userId = result.user?.uid
                     if (userId != null) {
-                        storeUserInFirestore(userId, email, pass, course)
+                        storeUserInFirestore(userId, email, pass, course, username)
 
                         // Call the function to store the timetable
 //                        storeTimetableInFirestore(userId, course)
@@ -65,6 +66,8 @@ class IgViewModel @Inject constructor(
             }
         }
     }
+
+
 
 
     // Function to handle user login
@@ -107,13 +110,15 @@ class IgViewModel @Inject constructor(
         userId: String,
         email: String,
         pass: String,
-        course: String
+        course: String,
+        username: String
     ) {
         try {
             val user = hashMapOf(
                 "email" to email,
                 "password" to pass,
-                "course" to course // Add the course information
+                "course" to course, // Add the course information
+                "username" to username
             )
 
             // Set user information in Firestore under the "users" collection
@@ -128,6 +133,8 @@ class IgViewModel @Inject constructor(
         } catch (e: Exception) {
             handleException(e, "Failed to store user information (included password) in Firestore")
         }
+        Log.d("Signup", "Storing user: Email: $email, Username: $username, Course: $course")
+
     }
 
     // Mutable state variables for user contact information
@@ -137,21 +144,21 @@ class IgViewModel @Inject constructor(
 
 
     // Function to store contact information in Firestore
-    suspend fun storeContactInFirestore(name: String, email: String, message: String) {
-        try {
-            val contact = hashMapOf(
-                "name" to name,
-                "email" to email,
-                "message" to message
-            )
-
-            // Store contact information in Firestore under the "contacts" collection
-            fireStore.collection("contacts")
-                .add(contact)
-                .await()
-
-        } catch (e: Exception) {
-            handleException(e, "Failed to store contact information in Firestore")
-        }
-    }
+//    suspend fun storeContactInFirestore(name: String, email: String, message: String) {
+//        try {
+//            val contact = hashMapOf(
+//                "name" to name,
+//                "email" to email,
+//                "message" to message
+//            )
+//
+//            // Store contact information in Firestore under the "contacts" collection
+//            fireStore.collection("contacts")
+//                .add(contact)
+//                .await()
+//
+//        } catch (e: Exception) {
+//            handleException(e, "Failed to store contact information in Firestore")
+//        }
+//    }
 }

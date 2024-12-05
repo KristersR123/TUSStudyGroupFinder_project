@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tusstudygroupfinder_project.IgViewModel
 import com.example.tusstudygroupfinder_project.DestinationScreen
+import com.example.tusstudygroupfinder_project.auth.CreateGroupScreen
 import com.example.tusstudygroupfinder_project.R
 
 
@@ -179,7 +180,7 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
 
                     Button(
                         onClick = {
-                            navController.navigate(DestinationScreen.Contact.route)
+                            navController.navigate(DestinationScreen.GroupScreen.route)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -196,7 +197,7 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
                         )
                     ) {
                         Text(
-                            text = "Contact Us",
+                            text = "New Study Group",
                             textAlign = TextAlign.Center,
                             fontSize = 25.sp,
                             textDecoration = TextDecoration.None,
@@ -210,7 +211,42 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(350.dp))
+                    Spacer(modifier = Modifier.height(30.dp))
+
+                    Button(
+                        onClick = {
+//                            navController.navigate(DestinationScreen.Contact.route)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(37.dp)
+                            .shadow(1.dp, shape = RoundedCornerShape(4.dp)),
+                        contentPadding = PaddingValues(),
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = Color(
+                                red = 0.02916666679084301f,
+                                green = 0.028315972536802292f,
+                                blue = 0.028315972536802292f,
+                                alpha = 1f
+                            )
+                        )
+                    ) {
+                        Text(
+                            text = "New Session",
+                            textAlign = TextAlign.Center,
+                            fontSize = 25.sp,
+                            textDecoration = TextDecoration.None,
+                            letterSpacing = 0.sp,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .alpha(1f),
+                            fontWeight = FontWeight.Medium,
+                            fontStyle = FontStyle.Normal,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(230.dp))
 
                     Box(
                         modifier = Modifier

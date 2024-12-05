@@ -15,6 +15,7 @@ import com.example.tusstudygroupfinder_project.auth.LoginScreen
 import com.example.tusstudygroupfinder_project.auth.MainScreen
 import com.example.tusstudygroupfinder_project.auth.SignupScreen
 import com.example.tusstudygroupfinder_project.auth.HomeScreen
+import com.example.tusstudygroupfinder_project.auth.CreateGroupScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -55,6 +56,7 @@ sealed class DestinationScreen(val route: String) {
     object Event: DestinationScreen("event")
     object TimeTable: DestinationScreen("timetable")
     object Contact: DestinationScreen("contact")
+    object GroupScreen: DestinationScreen("groupscreen")
 }
 
 // Composable function for the main authentication app
@@ -87,6 +89,9 @@ fun AuthenticationApp() {
         }
         composable(DestinationScreen.Home.route) {
             HomeScreen(navController, vm)
+        }
+        composable(DestinationScreen.GroupScreen.route) {
+            CreateGroupScreen(navController, vm)
         }
 
 //        composable(DestinationScreen.Contact.route){

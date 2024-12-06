@@ -84,7 +84,7 @@ fun CreateGroupScreen(navController: NavController, vm: IgViewModel) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "TUS",
+                        text = "TUS Study Group Finder",
                         color = Color.White,
                         fontSize = 36.sp,
                         fontWeight = FontWeight.Bold

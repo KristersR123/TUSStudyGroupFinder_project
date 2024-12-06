@@ -52,6 +52,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 
 
 @Composable
@@ -84,7 +86,7 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "TUS",
+                        text = "TUS Study Group Finder",
                         color = Color.White,
                         fontSize = 36.sp,
                         fontWeight = FontWeight.Bold

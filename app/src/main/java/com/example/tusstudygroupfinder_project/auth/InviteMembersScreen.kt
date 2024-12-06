@@ -69,7 +69,7 @@ fun InviteMembersScreen(navController: NavController, vm: IgViewModel, groupId: 
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "TUS",
+                        text = "TUS Study Group Finder",
                         color = Color.White,
                         fontSize = 36.sp,
                         fontWeight = FontWeight.Bold

@@ -162,7 +162,6 @@ class IgViewModel @Inject constructor(
     fun createGroup(
         groupName: String,
         course: String,
-        isPublic: Boolean,
         onComplete: (Boolean, String?) -> Unit
     ) {
         val userId = auth.currentUser?.uid ?: return onComplete(false, null)
@@ -170,7 +169,6 @@ class IgViewModel @Inject constructor(
         val groupInfo = hashMapOf(
             "name" to groupName,
             "course" to course,
-            "public" to isPublic,
             "creator" to userId
         )
 

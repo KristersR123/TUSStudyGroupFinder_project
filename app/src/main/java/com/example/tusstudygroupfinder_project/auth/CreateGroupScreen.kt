@@ -168,30 +168,12 @@ fun CreateGroupScreen(navController: NavController, vm: IgViewModel) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                RadioButton(
-                    selected = isPublic,
-                    onClick = { isPublic = true },
-                    colors = RadioButtonDefaults.colors(selectedColor = Color.White, unselectedColor = Color.Gray)
-                )
-                Text("Public", color = Color.White, modifier = Modifier.padding(start = 8.dp))
 
-                Spacer(modifier = Modifier.width(16.dp))
-
-                RadioButton(
-                    selected = !isPublic,
-                    onClick = { isPublic = false },
-                    colors = RadioButtonDefaults.colors(selectedColor = Color.White, unselectedColor = Color.Gray)
-                )
-                Text("Private", color = Color.White, modifier = Modifier.padding(start = 8.dp))
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
 
             Button(
                 onClick = {
                     // This lambda now correctly receives both the status and the group ID
-                    vm.createGroup(groupName, selectedCourse, isPublic) { success, groupId ->
+                    vm.createGroup(groupName, selectedCourse) { success, groupId ->
                         if (success) {
                             // Use the group ID to navigate to the invite members screen
                             navController.navigate("InviteMembersScreen/$groupId")

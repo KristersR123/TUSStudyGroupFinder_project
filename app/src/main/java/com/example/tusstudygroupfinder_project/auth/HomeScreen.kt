@@ -21,6 +21,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +49,9 @@ import com.example.tusstudygroupfinder_project.auth.CreateGroupScreen
 import com.example.tusstudygroupfinder_project.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.White
 
 
 @Composable
@@ -62,110 +66,110 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
             userGroups = groups // Update the list of groups
         }
     }
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFF7E6E44))
-        ) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF7E6E44))
+    ) {
 
-            Column {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.Black)
-                        .padding(vertical = 16.dp)
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Black)
+                    .padding(vertical = 16.dp)
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "TUS",
-                            color = Color.White,
-                            fontSize = 36.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "MIDWEST",
-                            color = Color.White,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                        Text(
-                            text = "Welcome Back, ${vm.userName}!",
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    }
+                    Text(
+                        text = "TUS",
+                        color = Color.White,
+                        fontSize = 36.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "MIDWEST",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = "Welcome Back, ${vm.userName}!",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Normal
+                    )
                 }
+            }
 
-                Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-                Box(
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFF7E6E44))
+            ) {
+
+
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color(0xFF7E6E44))
+                        .padding(16.dp)
                 ) {
 
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp)
                     ) {
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-
-                        Button(
-                            onClick = { expanded = !expanded },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(37.dp)
-                                .shadow(1.dp, shape = RoundedCornerShape(4.dp)),
-                            contentPadding = PaddingValues(),
-                            colors = ButtonDefaults.textButtonColors(
-                                contentColor = Color(
-                                    red = 0.02916666679084301f,
-                                    green = 0.028315972536802292f,
-                                    blue = 0.028315972536802292f,
-                                    alpha = 1f
-                                )
-                            )
-                        ) {
-                            Text(
-                                text = "View My Groups",
-                                textAlign = TextAlign.Center,
-                                fontSize = 25.sp,
-                                textDecoration = TextDecoration.None,
-                                letterSpacing = 0.sp,
-                                overflow = TextOverflow.Ellipsis,
+                        // View My Groups Button with Dropdown
+                        Box {
+                            Button(
+                                onClick = { expanded = !expanded },
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .alpha(1f),
-                                fontWeight = FontWeight.Medium,
-                                fontStyle = FontStyle.Normal,
-                            )
-                        }
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            userGroups.forEach { group ->
-                                DropdownMenuItem(
-                                    onClick = {
-                                        expanded = false
-                                        // Optionally handle navigation or actions on group click
+                                    .fillMaxWidth()
+                                    .height(50.dp)
+                                    .shadow(0.dp, shape = RoundedCornerShape(8.dp)),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                            ) {
+                                Text(
+                                    text = "View My Groups",
+                                    fontSize = 18.sp,
+                                    color = Color.White
+                                )
+                            }
+                            var color by remember { mutableStateOf(Color.White) }
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Color.DarkGray)
+                            ) {
+                                userGroups.forEach { group ->
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            expanded = false
+                                            // Optional: Navigate or handle click
+                                        }
+                                    ) {
+                                        Text(
+                                            text = group["name"] as? String ?: "Unknown Group",
+                                            color = Color.Black
+
+                                        )
                                     }
-                                ) {
-                                    Text(text = group["name"] as? String ?: "Unknown Group")
                                 }
                             }
                         }
 
                         Spacer(modifier = Modifier.height(30.dp))
+
+
 
                         Button(
                             onClick = {
@@ -173,30 +177,14 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(37.dp)
-                                .shadow(1.dp, shape = RoundedCornerShape(4.dp)),
-                            contentPadding = PaddingValues(),
-                            colors = ButtonDefaults.textButtonColors(
-                                contentColor = Color(
-                                    red = 0.02916666679084301f,
-                                    green = 0.028315972536802292f,
-                                    blue = 0.028315972536802292f,
-                                    alpha = 1f
-                                )
-                            )
+                                .height(50.dp)
+                                .shadow(0.dp, shape = RoundedCornerShape(8.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
                         ) {
                             Text(
                                 text = "Scheduled Sessions",
-                                textAlign = TextAlign.Center,
-                                fontSize = 25.sp,
-                                textDecoration = TextDecoration.None,
-                                letterSpacing = 0.sp,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .alpha(1f),
-                                fontWeight = FontWeight.Medium,
-                                fontStyle = FontStyle.Normal,
+                                fontSize = 18.sp,
+                                color = Color.White
                             )
                         }
 
@@ -208,30 +196,14 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(37.dp)
-                                .shadow(1.dp, shape = RoundedCornerShape(4.dp)),
-                            contentPadding = PaddingValues(),
-                            colors = ButtonDefaults.textButtonColors(
-                                contentColor = Color(
-                                    red = 0.02916666679084301f,
-                                    green = 0.028315972536802292f,
-                                    blue = 0.028315972536802292f,
-                                    alpha = 1f
-                                )
-                            )
+                                .height(50.dp)
+                                .shadow(0.dp, shape = RoundedCornerShape(8.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
                         ) {
                             Text(
                                 text = "New Study Group",
-                                textAlign = TextAlign.Center,
-                                fontSize = 25.sp,
-                                textDecoration = TextDecoration.None,
-                                letterSpacing = 0.sp,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .alpha(1f),
-                                fontWeight = FontWeight.Medium,
-                                fontStyle = FontStyle.Normal,
+                                fontSize = 18.sp,
+                                color = Color.White
                             )
                         }
 
@@ -243,34 +215,18 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(37.dp)
-                                .shadow(1.dp, shape = RoundedCornerShape(4.dp)),
-                            contentPadding = PaddingValues(),
-                            colors = ButtonDefaults.textButtonColors(
-                                contentColor = Color(
-                                    red = 0.02916666679084301f,
-                                    green = 0.028315972536802292f,
-                                    blue = 0.028315972536802292f,
-                                    alpha = 1f
-                                )
-                            )
+                                .height(50.dp)
+                                .shadow(0.dp, shape = RoundedCornerShape(8.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
                         ) {
                             Text(
                                 text = "New Session",
-                                textAlign = TextAlign.Center,
-                                fontSize = 25.sp,
-                                textDecoration = TextDecoration.None,
-                                letterSpacing = 0.sp,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .alpha(1f),
-                                fontWeight = FontWeight.Medium,
-                                fontStyle = FontStyle.Normal,
+                                fontSize = 18.sp,
+                                color = Color.White
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(230.dp))
+                        Spacer(modifier = Modifier.height(215.dp))
 
                         Box(
                             modifier = Modifier
@@ -289,7 +245,7 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     modifier = Modifier
-//                                        .clickable { navController.navigate(DestinationScreen.**.route) }
+                                        .clickable { navController.navigate(DestinationScreen.Home.route) }
                                 ) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_home),
@@ -388,3 +344,4 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
             }
         }
     }
+}

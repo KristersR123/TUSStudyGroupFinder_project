@@ -18,10 +18,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -43,325 +46,345 @@ import com.example.tusstudygroupfinder_project.IgViewModel
 import com.example.tusstudygroupfinder_project.DestinationScreen
 import com.example.tusstudygroupfinder_project.auth.CreateGroupScreen
 import com.example.tusstudygroupfinder_project.R
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 
 @Composable
 fun HomeScreen(navController: NavController, vm: IgViewModel) {
+    var userGroups by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
+    var expanded by remember { mutableStateOf(false) }
+
     // Call loadUserDetails when the HomeScreen is displayed
     LaunchedEffect(Unit) {
         vm.loadUserDetails()
+        vm.fetchUserGroups { groups ->
+            userGroups = groups // Update the list of groups
+        }
     }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF7E6E44))
-    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF7E6E44))
+        ) {
 
-        Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Black)
-                    .padding(vertical = 16.dp)
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
+            Column {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.Black)
+                        .padding(vertical = 16.dp)
                 ) {
-                    Text(
-                        text = "TUS",
-                        color = Color.White,
-                        fontSize = 36.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "MIDWEST",
-                        color = Color.White,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text = "Welcome Back, ${vm.userName}!",
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Normal
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "TUS",
+                            color = Color.White,
+                            fontSize = 36.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "MIDWEST",
+                            color = Color.White,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Text(
+                            text = "Welcome Back, ${vm.userName}!",
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFF7E6E44))
-            ) {
-
-
-
-                Column(
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp)
+                        .background(Color(0xFF7E6E44))
                 ) {
 
-                    Spacer(modifier = Modifier.height(8.dp))
 
-
-                    Button(
-                        onClick = {
-//                            navController.navigate(DestinationScreen.**.route)
-                        },
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(37.dp)
-                            .shadow(1.dp, shape = RoundedCornerShape(4.dp)),
-                        contentPadding = PaddingValues(),
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = Color(
-                                red = 0.02916666679084301f,
-                                green = 0.028315972536802292f,
-                                blue = 0.028315972536802292f,
-                                alpha = 1f
-                            )
-                        )
+                            .fillMaxSize()
+                            .padding(16.dp)
                     ) {
-                Text(
-                    text = "Your Study Groups",
-                    textAlign = TextAlign.Center,
-                    fontSize = 25.sp,
-                    textDecoration = TextDecoration.None,
-                    letterSpacing = 0.sp,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .alpha(1f),
-                    fontWeight = FontWeight.Medium,
-                    fontStyle = FontStyle.Normal,
-                )
-                    }
 
-                    Spacer(modifier = Modifier.height(30.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                    Button(
-                        onClick = {
-//                            navController.navigate(DestinationScreen.TimeTable.route)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(37.dp)
-                            .shadow(1.dp, shape = RoundedCornerShape(4.dp)),
-                        contentPadding = PaddingValues(),
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = Color(
-                                red = 0.02916666679084301f,
-                                green = 0.028315972536802292f,
-                                blue = 0.028315972536802292f,
-                                alpha = 1f
-                            )
-                        )
-                    ) {
-                Text(
-                    text = "Scheduled Sessions",
-                    textAlign = TextAlign.Center,
-                    fontSize = 25.sp,
-                    textDecoration = TextDecoration.None,
-                    letterSpacing = 0.sp,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .alpha(1f),
-                    fontWeight = FontWeight.Medium,
-                    fontStyle = FontStyle.Normal,
-                )
-                    }
 
-                    Spacer(modifier = Modifier.height(30.dp))
-
-                    Button(
-                        onClick = {
-                            navController.navigate(DestinationScreen.GroupScreen.route)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(37.dp)
-                            .shadow(1.dp, shape = RoundedCornerShape(4.dp)),
-                        contentPadding = PaddingValues(),
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = Color(
-                                red = 0.02916666679084301f,
-                                green = 0.028315972536802292f,
-                                blue = 0.028315972536802292f,
-                                alpha = 1f
-                            )
-                        )
-                    ) {
-                        Text(
-                            text = "New Study Group",
-                            textAlign = TextAlign.Center,
-                            fontSize = 25.sp,
-                            textDecoration = TextDecoration.None,
-                            letterSpacing = 0.sp,
-                            overflow = TextOverflow.Ellipsis,
+                        Button(
+                            onClick = { expanded = !expanded },
                             modifier = Modifier
-                                .fillMaxSize()
-                                .alpha(1f),
-                            fontWeight = FontWeight.Medium,
-                            fontStyle = FontStyle.Normal,
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(30.dp))
-
-                    Button(
-                        onClick = {
-//                            navController.navigate(DestinationScreen.Contact.route)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(37.dp)
-                            .shadow(1.dp, shape = RoundedCornerShape(4.dp)),
-                        contentPadding = PaddingValues(),
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = Color(
-                                red = 0.02916666679084301f,
-                                green = 0.028315972536802292f,
-                                blue = 0.028315972536802292f,
-                                alpha = 1f
+                                .fillMaxWidth()
+                                .height(37.dp)
+                                .shadow(1.dp, shape = RoundedCornerShape(4.dp)),
+                            contentPadding = PaddingValues(),
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = Color(
+                                    red = 0.02916666679084301f,
+                                    green = 0.028315972536802292f,
+                                    blue = 0.028315972536802292f,
+                                    alpha = 1f
+                                )
                             )
-                        )
-                    ) {
-                        Text(
-                            text = "New Session",
-                            textAlign = TextAlign.Center,
-                            fontSize = 25.sp,
-                            textDecoration = TextDecoration.None,
-                            letterSpacing = 0.sp,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .alpha(1f),
-                            fontWeight = FontWeight.Medium,
-                            fontStyle = FontStyle.Normal,
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(230.dp))
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(60.dp)
-                            .background(Color.Black)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth() .
-                                height(60.dp)
-                                .padding(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Home Button
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
+                            Text(
+                                text = "View My Groups",
+                                textAlign = TextAlign.Center,
+                                fontSize = 25.sp,
+                                textDecoration = TextDecoration.None,
+                                letterSpacing = 0.sp,
+                                overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier
-//                                        .clickable { navController.navigate(DestinationScreen.**.route) }
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_home),
-                                    contentDescription = "Home",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                Text(
-                                    text = "Home",
-                                    color = Color.White,
-                                    fontSize = 12.sp
-                                )
-                            }
-
-                            // User Button
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
-//                                        .clickable { navController.navigate(DestinationScreen.**.route) }
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_user),
-                                    contentDescription = "User",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                Text(
-                                    text = "User",
-                                    color = Color.White,
-                                    fontSize = 12.sp
-                                )
-                            }
-
-                            // Settings Button
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
-//                                        .clickable { navController.navigate(DestinationScreen.**.route) }
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_settings),
-                                    contentDescription = "Settings",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                Text(
-                                    text = "Settings",
-                                    color = Color.White,
-                                    fontSize = 12.sp
-                                )
+                                    .fillMaxSize()
+                                    .alpha(1f),
+                                fontWeight = FontWeight.Medium,
+                                fontStyle = FontStyle.Normal,
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            userGroups.forEach { group ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        expanded = false
+                                        // Optionally handle navigation or actions on group click
+                                    }
+                                ) {
+                                    Text(text = group["name"] as? String ?: "Unknown Group")
+                                }
                             }
                         }
-                    }
 
-                    Spacer(modifier = Modifier.height(30.dp))
+                        Spacer(modifier = Modifier.height(30.dp))
 
-                    // Back Button
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(50.dp))
-                            .align(Alignment.CenterHorizontally)
-                            .background(
-                                brush = Brush.horizontalGradient(
-                                    colors = listOf(Color(0xFFFFD700), Color(0xFFFFD700))
-                                )
-                            )
-                    ) {
                         Button(
                             onClick = {
-                                vm.logout()
-                                navController.navigate(DestinationScreen.Main.route)
+//                            navController.navigate(DestinationScreen.TimeTable.route)
                             },
-                            colors = ButtonDefaults.buttonColors(
-                                Color.Transparent
-                            ),
                             modifier = Modifier
-                                .width(300.dp)
-                                .align(Alignment.Center)
+                                .fillMaxWidth()
+                                .height(37.dp)
+                                .shadow(1.dp, shape = RoundedCornerShape(4.dp)),
+                            contentPadding = PaddingValues(),
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = Color(
+                                    red = 0.02916666679084301f,
+                                    green = 0.028315972536802292f,
+                                    blue = 0.028315972536802292f,
+                                    alpha = 1f
+                                )
+                            )
+                        ) {
+                            Text(
+                                text = "Scheduled Sessions",
+                                textAlign = TextAlign.Center,
+                                fontSize = 25.sp,
+                                textDecoration = TextDecoration.None,
+                                letterSpacing = 0.sp,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .alpha(1f),
+                                fontWeight = FontWeight.Medium,
+                                fontStyle = FontStyle.Normal,
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(30.dp))
+
+                        Button(
+                            onClick = {
+                                navController.navigate(DestinationScreen.GroupScreen.route)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(37.dp)
+                                .shadow(1.dp, shape = RoundedCornerShape(4.dp)),
+                            contentPadding = PaddingValues(),
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = Color(
+                                    red = 0.02916666679084301f,
+                                    green = 0.028315972536802292f,
+                                    blue = 0.028315972536802292f,
+                                    alpha = 1f
+                                )
+                            )
+                        ) {
+                            Text(
+                                text = "New Study Group",
+                                textAlign = TextAlign.Center,
+                                fontSize = 25.sp,
+                                textDecoration = TextDecoration.None,
+                                letterSpacing = 0.sp,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .alpha(1f),
+                                fontWeight = FontWeight.Medium,
+                                fontStyle = FontStyle.Normal,
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(30.dp))
+
+                        Button(
+                            onClick = {
+//                            navController.navigate(DestinationScreen.Contact.route)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(37.dp)
+                                .shadow(1.dp, shape = RoundedCornerShape(4.dp)),
+                            contentPadding = PaddingValues(),
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = Color(
+                                    red = 0.02916666679084301f,
+                                    green = 0.028315972536802292f,
+                                    blue = 0.028315972536802292f,
+                                    alpha = 1f
+                                )
+                            )
+                        ) {
+                            Text(
+                                text = "New Session",
+                                textAlign = TextAlign.Center,
+                                fontSize = 25.sp,
+                                textDecoration = TextDecoration.None,
+                                letterSpacing = 0.sp,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .alpha(1f),
+                                fontWeight = FontWeight.Medium,
+                                fontStyle = FontStyle.Normal,
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(230.dp))
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp)
+                                .background(Color.Black)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth().height(60.dp)
+                                    .padding(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Home Button
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+//                                        .clickable { navController.navigate(DestinationScreen.**.route) }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_home),
+                                        contentDescription = "Home",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Text(
+                                        text = "Home",
+                                        color = Color.White,
+                                        fontSize = 12.sp
+                                    )
+                                }
+
+                                // User Button
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+//                                        .clickable { navController.navigate(DestinationScreen.**.route) }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_user),
+                                        contentDescription = "User",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Text(
+                                        text = "User",
+                                        color = Color.White,
+                                        fontSize = 12.sp
+                                    )
+                                }
+
+                                // Settings Button
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+//                                        .clickable { navController.navigate(DestinationScreen.**.route) }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_settings),
+                                        contentDescription = "Settings",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Text(
+                                        text = "Settings",
+                                        color = Color.White,
+                                        fontSize = 12.sp
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(30.dp))
+
+                        // Back Button
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(50.dp))
+                                .align(Alignment.CenterHorizontally)
                                 .background(
                                     brush = Brush.horizontalGradient(
-                                        colors = listOf(Color(0xff554800), Color(0xff554800))
+                                        colors = listOf(Color(0xFFFFD700), Color(0xFFFFD700))
                                     )
                                 )
                         ) {
-                            Text(
-                                text = "Logout",
-                                color = Color.Black,
-                                fontSize = 30.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
+                            Button(
+                                onClick = {
+                                    vm.logout()
+                                    navController.navigate(DestinationScreen.Main.route)
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    Color.Transparent
+                                ),
+                                modifier = Modifier
+                                    .width(300.dp)
+                                    .align(Alignment.Center)
+                                    .background(
+                                        brush = Brush.horizontalGradient(
+                                            colors = listOf(Color(0xff554800), Color(0xff554800))
+                                        )
+                                    )
+                            ) {
+                                Text(
+                                    text = "Logout",
+                                    color = Color.Black,
+                                    fontSize = 30.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
 
+                        }
                     }
                 }
             }
         }
     }
-}

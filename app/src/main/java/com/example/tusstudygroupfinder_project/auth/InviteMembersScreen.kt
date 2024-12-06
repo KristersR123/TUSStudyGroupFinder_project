@@ -28,7 +28,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
@@ -44,17 +46,18 @@ import com.example.tusstudygroupfinder_project.R
 fun InviteMembersScreen(navController: NavController, vm: IgViewModel, groupId: String) {
     var searchText by remember { mutableStateOf("") }
 
-    // Call loadUserDetails when the HomeScreen is displayed
+    // Call loadUserDetails when the screen is displayed
     LaunchedEffect(Unit) {
         vm.loadUserDetails()
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF7E6E44))
     ) {
-
         Column {
+            // Header Section
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -86,30 +89,53 @@ fun InviteMembersScreen(navController: NavController, vm: IgViewModel, groupId: 
                 }
             }
 
-
             Spacer(modifier = Modifier.height(30.dp))
 
-            Column(modifier = Modifier.padding(16.dp)) {
+            // Search Section
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                // Search Username Text Field
                 OutlinedTextField(
                     value = searchText,
                     onValueChange = { searchText = it },
-                    label = { Text("Search Username") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    label = { Text("Search Username", color = Color.White) },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        textColor = Color.White,
+                        cursorColor = Color.White,
+                        focusedLabelColor = Color.White,
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.White
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Search Button
                 Button(
                     onClick = { vm.searchUsers(searchText) },
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
-                    Text("Search")
-                }
-                LazyColumn(modifier = Modifier.padding(top = 8.dp)) {
-                    items(vm.userSearchResults.value) { user ->
-                        UserItem(user, groupId, vm)
-                    }
+                    Text("Search", color = Color.Black, fontSize = 18.sp)
                 }
             }
-            Spacer(modifier = Modifier.height(425.dp))
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Search Results
+            LazyColumn(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
+            ) {
+                items(vm.userSearchResults.value) { user ->
+                    UserItem(user, groupId, vm)
+                }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
 
             Box(
                 modifier = Modifier
@@ -119,8 +145,7 @@ fun InviteMembersScreen(navController: NavController, vm: IgViewModel, groupId: 
             ) {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth() .
-                        height(60.dp)
+                        .fillMaxWidth().height(60.dp)
                         .padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -192,12 +217,27 @@ fun UserItem(user: IgViewModel.User, groupId: String, vm: IgViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(vertical = 8.dp)
+            .background(Color.Gray)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "${user.username} (${user.email})")
-        Button(onClick = { vm.inviteUserToGroup(groupId, user.userId) }) {
-            Text("Invite")
+        Text(
+            text = "${user.username} (${user.email})",
+            color = Color.White,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            modifier = Modifier.weight(1f)
+        )
+        Button(
+            onClick = { vm.inviteUserToGroup(groupId, user.userId) },
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+            modifier = Modifier
+                .height(40.dp)
+                .padding(start = 16.dp)
+        ) {
+            Text("Invite", color = Color.Black, fontSize = 14.sp)
         }
     }
 }

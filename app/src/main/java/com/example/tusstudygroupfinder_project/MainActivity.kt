@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.tusstudygroupfinder_project.auth.InviteMembersScreen
+import com.example.tusstudygroupfinder_project.auth.SelectGroupScreen
 
 import com.example.tusstudygroupfinder_project.main.NotificationMessage
 import com.example.tusstudygroupfinder_project.ui.theme.MyApplicationTheme
@@ -59,6 +60,7 @@ sealed class DestinationScreen(val route: String) {
     object Contact: DestinationScreen("contact")
     object GroupScreen: DestinationScreen("groupscreen")
     object InviteMembers: DestinationScreen("InviteMembersScreen/{groupId}")
+    object SelectGroupSession: DestinationScreen("selectgroup")
 }
 
 // Composable function for the main authentication app
@@ -99,6 +101,9 @@ fun AuthenticationApp() {
         composable("InviteMembersScreen/{groupId}") { backStackEntry ->
             val groupId = backStackEntry.arguments?.getString("groupId") ?: return@composable
             InviteMembersScreen(navController, vm, groupId)
+        }
+        composable(DestinationScreen.SelectGroupSession.route){
+            SelectGroupScreen(navController, vm)
         }
 
 //        composable(DestinationScreen.Contact.route){

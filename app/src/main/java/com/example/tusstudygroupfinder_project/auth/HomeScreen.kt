@@ -211,7 +211,7 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
 
                         Button(
                             onClick = {
-//                            navController.navigate(DestinationScreen.Contact.route)
+                            navController.navigate(DestinationScreen.SelectGroupSession.route)
                             },
                             modifier = Modifier
                                 .fillMaxWidth()

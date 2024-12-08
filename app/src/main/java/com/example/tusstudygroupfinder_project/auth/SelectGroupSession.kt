@@ -53,7 +53,7 @@ fun SelectGroupScreen(navController: NavController, vm: IgViewModel) {
     var userGroups by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
 
     LaunchedEffect(Unit) {
-        vm.fetchMyGroups { groups ->
+        vm.fetchMyJoinedGroups { groups ->
             userGroups = groups
         }
     }

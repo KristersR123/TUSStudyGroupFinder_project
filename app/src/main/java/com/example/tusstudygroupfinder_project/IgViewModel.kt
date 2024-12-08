@@ -306,6 +306,41 @@ class IgViewModel @Inject constructor(
             }
     }
 
+    fun fetchMyJoinedGroups(onResult: (List<Map<String, Any>>) -> Unit) {
+        val userId = auth.currentUser?.uid ?: return
+
+        // Fetch memberships where the user is "joined"
+        fireStore.collectionGroup("memberships")
+            .whereEqualTo("userId", userId)
+            .whereEqualTo("status", "joined") // Only fetch "joined" memberships
+            .get()
+            .addOnSuccessListener { membershipSnapshot ->
+                val groupIds = membershipSnapshot.documents.mapNotNull { it.reference.parent.parent?.id }
+
+                if (groupIds.isNotEmpty()) {
+                    // Fetch group details for these groupIds
+                    fireStore.collection("groups")
+                        .whereIn(FieldPath.documentId(), groupIds)
+                        .get()
+                        .addOnSuccessListener { groupSnapshot ->
+                            val groups = groupSnapshot.documents.map { it.data ?: emptyMap() }
+                            onResult(groups)
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("FetchMyJoinedGroups", "Error fetching groups by IDs", e)
+                            onResult(emptyList())
+                        }
+                } else {
+                    Log.d("FetchMyJoinedGroups", "No joined memberships found")
+                    onResult(emptyList())
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("FetchMyJoinedGroups", "Error fetching memberships", e)
+                onResult(emptyList())
+            }
+    }
+
     // Data class for a user
     data class User(
         var userId: String = "",

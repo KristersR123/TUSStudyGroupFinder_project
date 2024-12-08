@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.tusstudygroupfinder_project.auth.CreateSessionScreen
 import com.example.tusstudygroupfinder_project.auth.InviteMembersScreen
 import com.example.tusstudygroupfinder_project.auth.SelectGroupScreen
 
@@ -61,6 +62,7 @@ sealed class DestinationScreen(val route: String) {
     object GroupScreen: DestinationScreen("groupscreen")
     object InviteMembers: DestinationScreen("InviteMembersScreen/{groupId}")
     object SelectGroupSession: DestinationScreen("selectgroup")
+    object CreateSession : DestinationScreen("CreateSessionScreen/{groupId}")
 }
 
 // Composable function for the main authentication app
@@ -104,6 +106,11 @@ fun AuthenticationApp() {
         }
         composable(DestinationScreen.SelectGroupSession.route){
             SelectGroupScreen(navController, vm)
+        }
+        //  CreateSession with a dynamic groupId parameter
+        composable("CreateSessionScreen/{groupId}") { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: return@composable
+            CreateSessionScreen(navController, vm, groupId)
         }
 
 //        composable(DestinationScreen.Contact.route){

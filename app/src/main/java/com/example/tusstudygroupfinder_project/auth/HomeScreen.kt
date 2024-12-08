@@ -55,6 +55,7 @@ import androidx.compose.runtime.setValue
 fun HomeScreen(navController: NavController, vm: IgViewModel) {
     var userGroups by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
     var expanded by remember { mutableStateOf(false) }
+    var scheduledSessions by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
 
     // Call loadUserDetails when the HomeScreen is displayed
     LaunchedEffect(Unit) {
@@ -64,6 +65,9 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
         }
         vm.fetchMyGroups { groups ->
             userGroups = groups // Update the list of groups
+        }
+        vm.fetchScheduledSessions { sessions ->
+            scheduledSessions = sessions
         }
     }
     Box(
@@ -189,6 +193,24 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
                         }
 
                         Spacer(modifier = Modifier.height(30.dp))
+
+                        // Display sessions
+                        Column {
+                            scheduledSessions.forEach { session ->
+                                val groupName = session["groupName"] as? String ?: "Unknown Group"
+                                val course = session["course"] as? String ?: "Unknown Course"
+                                val title = session["title"] as? String ?: "No Title"
+                                val date = session["date"] as? String ?: "Unknown Date"
+                                val time = session["time"] as? String ?: "Unknown Time"
+                                val location = session["location"] as? String ?: "No Location"
+
+                                Text(
+                                    text = "$groupName - $course : $title\n$date $time, $location",
+                                    color = Color.White,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                            }
+                        }
 
                         Button(
                             onClick = {

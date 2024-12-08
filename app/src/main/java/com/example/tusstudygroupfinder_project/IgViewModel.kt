@@ -341,6 +341,80 @@ class IgViewModel @Inject constructor(
             }
     }
 
+
+    fun createSession(
+        groupId: String,
+        title: String,
+        date: String,
+        time: String,
+        location: String,
+        description: String
+    ) {
+        val sessionData = mapOf(
+            "title" to title,
+            "date" to date,
+            "time" to time,
+            "location" to location,
+            "description" to description,
+            "createdAt" to System.currentTimeMillis()
+        )
+
+        fireStore.collection("groups")
+            .document(groupId)
+            .collection("sessions")
+            .add(sessionData)
+            .addOnSuccessListener {
+                Log.d("CreateSession", "Session created successfully")
+            }
+            .addOnFailureListener { e ->
+                Log.e("CreateSession", "Failed to create session", e)
+            }
+    }
+
+    fun fetchScheduledSessions(onResult: (List<Map<String, Any>>) -> Unit) {
+        val userId = auth.currentUser?.uid ?: return
+
+        fireStore.collectionGroup("memberships")
+            .whereEqualTo("userId", userId)
+            .whereEqualTo("status", "joined")
+            .get()
+            .addOnSuccessListener { membershipsSnapshot ->
+                val groupIds = membershipsSnapshot.documents.mapNotNull { it.reference.parent.parent?.id }
+
+                if (groupIds.isNotEmpty()) {
+                    fireStore.collection("groups")
+                        .whereIn(FieldPath.documentId(), groupIds)
+                        .get()
+                        .addOnSuccessListener { groupsSnapshot ->
+                            val sessions = mutableListOf<Map<String, Any>>()
+                            val groupDetails = groupsSnapshot.documents.associateBy { it.id }
+
+                            groupIds.forEach { groupId ->
+                                fireStore.collection("groups").document(groupId).collection("sessions")
+                                    .get()
+                                    .addOnSuccessListener { sessionSnapshot ->
+                                        sessionSnapshot.documents.forEach { sessionDoc ->
+                                            val group = groupDetails[groupId]
+                                            val groupName = group?.getString("name") ?: "Unknown Group"
+                                            val course = group?.getString("course") ?: "Unknown Course"
+                                            val sessionData = sessionDoc.data ?: emptyMap()
+                                            sessions.add(
+                                                sessionData + mapOf(
+                                                    "groupName" to groupName,
+                                                    "course" to course
+                                                )
+                                            )
+                                        }
+                                        onResult(sessions)
+                                    }
+                            }
+                        }
+                } else {
+                    onResult(emptyList())
+                }
+            }
+    }
+
     // Data class for a user
     data class User(
         var userId: String = "",

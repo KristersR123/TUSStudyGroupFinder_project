@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.auth.User
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -271,6 +272,39 @@ class IgViewModel @Inject constructor(
             }
     }
 
+    fun fetchMyGroups(onResult: (List<Map<String, Any>>) -> Unit) {
+        val userId = auth.currentUser?.uid ?: return
+
+        // Fetch memberships where the logged-in user is the userId
+        fireStore.collectionGroup("memberships")
+            .whereEqualTo("userId", userId)
+            .get()
+            .addOnSuccessListener { membershipSnapshot ->
+                val groupIds = membershipSnapshot.documents.mapNotNull { it.reference.parent.parent?.id }
+
+                if (groupIds.isNotEmpty()) {
+                    // Fetch the group details based on groupIds
+                    fireStore.collection("groups")
+                        .whereIn(FieldPath.documentId(), groupIds)
+                        .get()
+                        .addOnSuccessListener { groupSnapshot ->
+                            val groups = groupSnapshot.documents.map { it.data ?: emptyMap() }
+                            onResult(groups) // Return the fetched groups
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("FetchMyGroups", "Error fetching groups by IDs", e)
+                            onResult(emptyList())
+                        }
+                } else {
+                    Log.d("FetchMyGroups", "No memberships found")
+                    onResult(emptyList()) // No memberships available
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("FetchMyGroups", "Error fetching memberships", e)
+                onResult(emptyList())
+            }
+    }
 
     // Data class for a user
     data class User(

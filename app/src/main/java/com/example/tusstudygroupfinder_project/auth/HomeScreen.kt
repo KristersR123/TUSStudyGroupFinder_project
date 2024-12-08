@@ -49,11 +49,6 @@ import com.example.tusstudygroupfinder_project.auth.CreateGroupScreen
 import com.example.tusstudygroupfinder_project.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 
 
 @Composable
@@ -65,6 +60,9 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
     LaunchedEffect(Unit) {
         vm.loadUserDetails()
         vm.fetchUserGroups { groups ->
+            userGroups = groups // Update the list of groups
+        }
+        vm.fetchMyGroups { groups ->
             userGroups = groups // Update the list of groups
         }
     }

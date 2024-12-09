@@ -1,5 +1,6 @@
 package com.example.tusstudygroupfinder_project.auth
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,31 +46,36 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tusstudygroupfinder_project.IgViewModel
 import com.example.tusstudygroupfinder_project.DestinationScreen
-import com.example.tusstudygroupfinder_project.auth.CreateGroupScreen
 import com.example.tusstudygroupfinder_project.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 
 
 @Composable
-fun HomeScreen(navController: NavController, vm: IgViewModel) {
+fun HomeScreen(navController: NavController, vm: IgViewModel, groupId: String) {
     var userGroups by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
     var expanded by remember { mutableStateOf(false) }
-    var scheduledSessions by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
+    var sessions by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
 
-    // Call loadUserDetails when the HomeScreen is displayed
+
+
+        // Call loadUserDetails when the HomeScreen is displayed
     LaunchedEffect(Unit) {
         vm.loadUserDetails()
         vm.fetchUserGroups { groups ->
-            userGroups = groups // Update the list of groups
+            userGroups = groups
         }
-        vm.fetchMyGroups { groups ->
-            userGroups = groups // Update the list of groups
-        }
-        vm.fetchScheduledSessions { sessions ->
-            scheduledSessions = sessions
+//        vm.fetchSessionsForGroup(groupId) { fetchedSessions ->
+//            sessions = fetchedSessions
+//            isLoading = false
+//        }
+        vm.fetchAllSessions { fetchedSessions ->
+            sessions = fetchedSessions
+            isLoading = false
         }
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -194,22 +200,23 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
 
                         Spacer(modifier = Modifier.height(30.dp))
 
-                        // Display sessions
-                        Column {
-                            scheduledSessions.forEach { session ->
-                                val groupName = session["groupName"] as? String ?: "Unknown Group"
-                                val course = session["course"] as? String ?: "Unknown Course"
-                                val title = session["title"] as? String ?: "No Title"
-                                val date = session["date"] as? String ?: "Unknown Date"
-                                val time = session["time"] as? String ?: "Unknown Time"
-                                val location = session["location"] as? String ?: "No Location"
+                        if (isLoading) {
+                            Text(text = "Loading...", color = Color.White)
+                        } else if (sessions.isEmpty()) {
+                            Text(text = "No sessions found.", color = Color.White)
+                        } else {
+                            sessions.forEach { session ->
+                                val title = session["sessionTitle"] as? String ?: "No Title"
+                                val date = session["date"] as? String ?: "No Date"
+                                val time = session["time"] as? String ?: "No Time"
 
-                                Text(
-                                    text = "$groupName - $course : $title\n$date $time, $location",
-                                    color = Color.White,
-                                    modifier = Modifier.padding(8.dp)
-                                )
+                                Text(text = "Title: $title", color = Color.White)
+                                Text(text = "Date: $date", color = Color.White)
+                                Text(text = "Time: $time", color = Color.White)
+                                Spacer(modifier = Modifier.height(30.dp))
                             }
+
+
                         }
 
                         Button(
@@ -248,7 +255,7 @@ fun HomeScreen(navController: NavController, vm: IgViewModel) {
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(215.dp))
+                        Spacer(modifier = Modifier.height(125.dp))
 
                         Box(
                             modifier = Modifier

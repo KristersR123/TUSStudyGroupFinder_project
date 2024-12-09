@@ -182,22 +182,19 @@ class IgViewModel @Inject constructor(
                 // Immediately add a membership entry for the group creator
                 val membershipInfo = hashMapOf(
                     "userId" to userId,
-                    "status" to "joined"  // Assuming the creator is automatically joined
+                    "status" to "joined" // The creator is automatically joined
                 )
                 fireStore.collection("groups").document(documentReference.id)
                     .collection("memberships")
-                    .document(userId) // Ensure the document ID is the userId
+                    .document(userId) // Document ID is the userId
                     .set(membershipInfo)
                     .addOnSuccessListener {
-                        Log.d(
-                            "Firebase",
-                            "Membership entry created for user $userId in group ${documentReference.id}"
-                        )
-                        onComplete(true, documentReference.id)
+                        Log.d("Firebase", "Membership entry created for user $userId in group ${documentReference.id}")
+                        onComplete(true, documentReference.id) // Return groupId on success
                     }
                     .addOnFailureListener { e ->
                         Log.e("Firebase", "Error adding membership", e)
-                        onComplete(false, null) // Handle the error appropriately
+                        onComplete(false, null) // Handle error
                     }
             }
             .addOnFailureListener { e ->
@@ -263,12 +260,16 @@ class IgViewModel @Inject constructor(
             .whereEqualTo("creator", userId) // Fetch groups created by the user
             .get()
             .addOnSuccessListener { querySnapshot ->
-                val groups = querySnapshot.documents.map { it.data ?: emptyMap() }
-                onResult(groups) // Return the group data
+                val groups = querySnapshot.documents.map { document ->
+                    val data = document.data ?: emptyMap<String, Any>()
+                    data + mapOf("id" to document.id) // Add the document ID to the data
+                }
+                Log.d("FetchUserGroups", "Fetched groups: $groups")
+                onResult(groups)
             }
             .addOnFailureListener { e ->
-                Log.e("FetchGroups", "Error fetching groups", e)
-                onResult(emptyList()) // Return an empty list in case of failure
+                Log.e("FetchUserGroups", "Error fetching groups", e)
+                onResult(emptyList())
             }
     }
 
@@ -288,7 +289,7 @@ class IgViewModel @Inject constructor(
                         .whereIn(FieldPath.documentId(), groupIds)
                         .get()
                         .addOnSuccessListener { groupSnapshot ->
-                            val groups = groupSnapshot.documents.map { it.data ?: emptyMap() }
+                            val groups = groupSnapshot.documents.map { it.data ?: emptyMap<String, Any>() }
                             onResult(groups) // Return the fetched groups
                         }
                         .addOnFailureListener { e ->
@@ -344,76 +345,77 @@ class IgViewModel @Inject constructor(
 
     fun createSession(
         groupId: String,
-        title: String,
+        sessionTitle: String,
         date: String,
         time: String,
         location: String,
-        description: String
+        description: String,
+        onComplete: (Boolean) -> Unit
     ) {
-        val sessionData = mapOf(
-            "title" to title,
+        val userId = auth.currentUser?.uid ?: return onComplete(false)
+
+        val sessionData = hashMapOf(
+            "sessionTitle" to sessionTitle,
             "date" to date,
             "time" to time,
             "location" to location,
             "description" to description,
+            "creator" to userId,
             "createdAt" to System.currentTimeMillis()
         )
 
         fireStore.collection("groups")
-            .document(groupId)
-            .collection("sessions")
+            .document(groupId) // Nest under the specific group
+            .collection("sessions") // Use 'sessions' subcollection
             .add(sessionData)
             .addOnSuccessListener {
-                Log.d("CreateSession", "Session created successfully")
+                Log.d("CreateSession", "Session created successfully under groupId: $groupId")
+                onComplete(true)
             }
             .addOnFailureListener { e ->
-                Log.e("CreateSession", "Failed to create session", e)
+                Log.e("CreateSession", "Error creating session under groupId: $groupId", e)
+                onComplete(false)
             }
     }
 
-    fun fetchScheduledSessions(onResult: (List<Map<String, Any>>) -> Unit) {
-        val userId = auth.currentUser?.uid ?: return
 
-        fireStore.collectionGroup("memberships")
-            .whereEqualTo("userId", userId)
-            .whereEqualTo("status", "joined")
+
+    fun fetchSessionsForGroup(groupId: String, onResult: (List<Map<String, Any>>) -> Unit) {
+        fireStore.collection("groups")
+            .document(groupId)
+            .collection("sessions")
             .get()
-            .addOnSuccessListener { membershipsSnapshot ->
-                val groupIds = membershipsSnapshot.documents.mapNotNull { it.reference.parent.parent?.id }
-
-                if (groupIds.isNotEmpty()) {
-                    fireStore.collection("groups")
-                        .whereIn(FieldPath.documentId(), groupIds)
-                        .get()
-                        .addOnSuccessListener { groupsSnapshot ->
-                            val sessions = mutableListOf<Map<String, Any>>()
-                            val groupDetails = groupsSnapshot.documents.associateBy { it.id }
-
-                            groupIds.forEach { groupId ->
-                                fireStore.collection("groups").document(groupId).collection("sessions")
-                                    .get()
-                                    .addOnSuccessListener { sessionSnapshot ->
-                                        sessionSnapshot.documents.forEach { sessionDoc ->
-                                            val group = groupDetails[groupId]
-                                            val groupName = group?.getString("name") ?: "Unknown Group"
-                                            val course = group?.getString("course") ?: "Unknown Course"
-                                            val sessionData = sessionDoc.data ?: emptyMap()
-                                            sessions.add(
-                                                sessionData + mapOf(
-                                                    "groupName" to groupName,
-                                                    "course" to course
-                                                )
-                                            )
-                                        }
-                                        onResult(sessions)
-                                    }
-                            }
-                        }
-                } else {
-                    onResult(emptyList())
+            .addOnSuccessListener { sessionSnapshot ->
+                val sessions = sessionSnapshot.documents.map { sessionDoc ->
+                    sessionDoc.data ?: emptyMap()
                 }
+                Log.d("FetchSessionsForGroup", "Fetched sessions for groupId: $groupId - $sessions")
+                onResult(sessions)
+            }
+            .addOnFailureListener { e ->
+                Log.e("FetchSessionsForGroup", "Error fetching sessions for groupId: $groupId", e)
+                onResult(emptyList())
             }
     }
+
+    fun fetchAllSessions(onResult: (List<Map<String, Any>>) -> Unit) {
+        val userId = auth.currentUser?.uid ?: return onResult(emptyList())
+
+        fireStore.collectionGroup("sessions")
+            .get()
+            .addOnSuccessListener { sessionSnapshot ->
+                val allSessions = sessionSnapshot.documents.map { sessionDoc ->
+                    sessionDoc.data ?: emptyMap()
+                }
+                Log.d("FetchAllSessions", "Fetched all sessions: $allSessions")
+                onResult(allSessions)
+            }
+            .addOnFailureListener { e ->
+                Log.e("FetchAllSessions", "Error fetching all sessions", e)
+                onResult(emptyList())
+            }
+    }
+
 
     // Data class for a user
     data class User(

@@ -1,5 +1,6 @@
 package com.example.tusstudygroupfinder_project.auth
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -54,7 +55,14 @@ fun SelectGroupScreen(navController: NavController, vm: IgViewModel) {
 
     LaunchedEffect(Unit) {
         vm.fetchMyJoinedGroups { groups ->
-            userGroups = groups
+            userGroups = groups.map { group ->
+                group.toMutableMap().apply {
+                    if (!this.containsKey("id")) {
+                        this["id"] = (this["name"] as? String)?.hashCode().toString()
+                    }
+                }
+            }
+            Log.d("UserGroups", "Fetched userGroups: $userGroups")
         }
     }
 
@@ -109,19 +117,24 @@ fun SelectGroupScreen(navController: NavController, vm: IgViewModel) {
                     selectedGroup = selectedGroupName,
                     onGroupSelected = { groupId, groupName ->
                         selectedGroup = groupId
-                        selectedGroupName = groupName // Update name on selection
+                        selectedGroupName = groupName
                     }
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Go Button
-                Button(
-                    onClick = {
-                        selectedGroup?.let { groupId ->
+            Button(
+                onClick = {
+                    selectedGroup?.let { groupId ->
+                        if (groupId.isNotEmpty()) {
                             navController.navigate("CreateSessionScreen/$groupId")
+                            Log.d("SelectGroupScreen", "Navigating with groupId: $groupId")
+                        } else {
+                            Log.e("NavigationError", "groupId is empty")
                         }
-                    },
+                    }
+                },
                     enabled = selectedGroup != null,
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
                     modifier = Modifier.fillMaxWidth()
@@ -238,16 +251,12 @@ fun DropdownMenuContent(
 
     Box {
         OutlinedTextField(
-            value = selectedGroup, // Displays the selected group name
+            value = selectedGroup,
             onValueChange = { },
             readOnly = true,
             trailingIcon = {
                 IconButton(onClick = { expanded = !expanded }) {
-                    Icon(
-                        Icons.Default.ArrowDropDown,
-                        contentDescription = null,
-                        tint = Color.White
-                    )
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.White)
                 }
             },
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -266,19 +275,16 @@ fun DropdownMenuContent(
                 val groupId = group["id"] as? String ?: ""
                 DropdownMenuItem(
                     onClick = {
-                        onGroupSelected(groupId, groupName) // Pass both ID and name
+                        if (groupId.isNotEmpty()) {
+                            onGroupSelected(groupId, groupName)
+                            Log.d("DropdownMenuContent", "Selected groupId: $groupId, groupName: $groupName")
+                        } else {
+                            Log.e("DropdownMenuContent", "groupId is empty for groupName: $groupName")
+                        }
                         expanded = false
                     }
                 ) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = groupName,
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                    Text(text = groupName)
                 }
             }
         }

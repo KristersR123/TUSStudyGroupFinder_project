@@ -2,6 +2,7 @@ package com.example.tusstudygroupfinder_project
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -55,7 +56,7 @@ sealed class DestinationScreen(val route: String) {
     object Main: DestinationScreen("main")
     object Signup: DestinationScreen("signup")
     object Login: DestinationScreen("login")
-    object Home: DestinationScreen("home")
+    object Home: DestinationScreen("home/{groupId}")
     object Event: DestinationScreen("event")
     object TimeTable: DestinationScreen("timetable")
     object Contact: DestinationScreen("contact")
@@ -93,8 +94,10 @@ fun AuthenticationApp() {
         composable(DestinationScreen.Login.route) {
             LoginScreen(navController, vm)
         }
-        composable(DestinationScreen.Home.route) {
-            HomeScreen(navController, vm)
+
+        composable("home/{groupId}") { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: return@composable
+            HomeScreen(navController, vm, groupId) // Pass groupId to HomeScreen
         }
         composable(DestinationScreen.GroupScreen.route) {
             CreateGroupScreen(navController, vm)

@@ -1,5 +1,6 @@
 package com.example.tusstudygroupfinder_project.auth
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,9 +43,10 @@ fun CreateSessionScreen(navController: NavController, vm: IgViewModel, groupId: 
     var sessionTitle by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
     var time by remember { mutableStateOf("") }
-    var duration by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+
+    Log.d("CreateSessionScreen", "Received groupId: $groupId")
 
     Box(
         modifier = Modifier
@@ -130,17 +132,19 @@ fun CreateSessionScreen(navController: NavController, vm: IgViewModel, groupId: 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Submit button
-            Button(
-                onClick = {
-                    vm.createSession(
-                        groupId,
-                        sessionTitle,
-                        date,
-                        time,
-                        location,
-                        description
-                    )
-                    navController.navigateUp() // Navigate back after creating session
+            Button(onClick = {
+                vm.createSession(
+                    groupId = groupId, // Pass the current groupId
+                    sessionTitle = sessionTitle,
+                    date = date,
+                    time = time,
+                    location = location,
+                    description = description
+                ) { success ->
+                    if (success) {
+                        navController.navigate("home/$groupId") // Navigate back to the group home screen
+                    }
+                }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
                 modifier = Modifier.fillMaxWidth()

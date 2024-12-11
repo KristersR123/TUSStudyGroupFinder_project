@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -47,10 +49,9 @@ fun HomeScreen(navController: NavController, vm: IgViewModel, groupId: String) {
     var expanded by remember { mutableStateOf(false) }
     val sessions by vm.allSessions
     val isLoading by remember { mutableStateOf(vm.isLoading.value) }
+    val scrollState = rememberScrollState()
 
-
-
-        // Call loadUserDetails when the HomeScreen is displayed
+    // Call loadUserDetails when the HomeScreen is displayed
     LaunchedEffect(Unit) {
         vm.loadUserDetails()
         vm.fetchUserGroups { groups ->
@@ -75,6 +76,7 @@ fun HomeScreen(navController: NavController, vm: IgViewModel, groupId: String) {
                     .fillMaxWidth()
                     .background(Color.Black)
                     .padding(vertical = 16.dp)
+                    .verticalScroll(scrollState) // Makes the entire screen scrollable
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -164,26 +166,6 @@ fun HomeScreen(navController: NavController, vm: IgViewModel, groupId: String) {
                         Spacer(modifier = Modifier.height(30.dp))
 
 
-
-                        Button(
-                            onClick = {
-//                            navController.navigate(DestinationScreen.TimeTable.route)
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp)
-                                .shadow(0.dp, shape = RoundedCornerShape(8.dp)),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
-                        ) {
-                            Text(
-                                text = "Scheduled Sessions",
-                                fontSize = 18.sp,
-                                color = Color.White
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(30.dp))
-
                         if (isLoading) {
                             Text(text = "Loading...", color = Color.White)
                         } else if (sessions.isEmpty()) {
@@ -193,10 +175,14 @@ fun HomeScreen(navController: NavController, vm: IgViewModel, groupId: String) {
                                 val title = session["sessionTitle"] as? String ?: "No Title"
                                 val date = session["date"] as? String ?: "No Date"
                                 val time = session["time"] as? String ?: "No Time"
+                                val location = session["location"] as? String ?: "No Location"
+                                val description = session["description"] as? String ?: "No Description"
 
                                 Text(text = "Title: $title", color = Color.White)
                                 Text(text = "Date: $date", color = Color.White)
                                 Text(text = "Time: $time", color = Color.White)
+                                Text(text = "Location: $location", color = Color.White)
+                                Text(text = "Description: $description", color = Color.White)
                                 Spacer(modifier = Modifier.height(30.dp))
                             }
                         }

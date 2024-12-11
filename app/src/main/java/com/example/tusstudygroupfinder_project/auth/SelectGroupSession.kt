@@ -48,6 +48,7 @@ fun SelectGroupScreen(navController: NavController, vm: IgViewModel) {
     var selectedGroup by remember { mutableStateOf<String?>(null) }
     var selectedGroupName by remember { mutableStateOf<String>("Select a Group") }
     var userGroups by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
+    var groupSessions by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
 
     LaunchedEffect(Unit) {
         vm.fetchMyJoinedOrCreatedGroups { groups ->
@@ -114,6 +115,7 @@ fun SelectGroupScreen(navController: NavController, vm: IgViewModel) {
                     onGroupSelected = { groupId, groupName ->
                         selectedGroup = groupId
                         selectedGroupName = groupName
+
                     }
                 )
 
@@ -147,19 +149,50 @@ fun SelectGroupScreen(navController: NavController, vm: IgViewModel) {
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Go Back Button
-                Button(
-                    onClick = { navController.navigateUp() },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Go Back",
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Center
-                    )
-                }
+            // Delete Group Button
+            Button(
+                onClick = {
+                    selectedGroup?.let { groupId ->
+                        vm.deleteGroup(groupId) { success ->
+                            if (success) {
+                                userGroups = userGroups.filterNot { it["id"] == groupId }
+                                navController.navigate(DestinationScreen.Home.route) // Navigate to home after deletion
+                            }
+                        }
+                    }
+                },
+                enabled = selectedGroup != null,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Delete Group",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Go Back Button
+            Button(
+                onClick = { navController.navigateUp() },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Go Back",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+
+
+
             Spacer(modifier = Modifier.height(432.dp))
 
             Box(

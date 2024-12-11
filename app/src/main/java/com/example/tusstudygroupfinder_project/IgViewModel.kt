@@ -11,7 +11,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -167,6 +166,7 @@ class IgViewModel @Inject constructor(
 fun createGroup(
     groupName: String,
     course: String,
+    isPublic: Boolean,
     onComplete: (Boolean, String?) -> Unit
 ) {
     val userId = auth.currentUser?.uid ?: return onComplete(false, null)
@@ -175,7 +175,8 @@ fun createGroup(
     val groupData = mapOf(
         "name" to groupName,
         "course" to course,
-        "creator" to userId
+        "creator" to userId,
+        "isPublic" to isPublic
     )
 
     val membershipData = mapOf(
@@ -224,9 +225,9 @@ fun createGroup(
     var userSearchResults = mutableStateOf<List<User>>(listOf())
 
     // Search function to gather users via username from firestore
-    fun searchUsers(searchText: String) {
+    fun searchUsers(searchText: String, onResult: (List<User>) -> Unit) {
         if (searchText.isBlank()) {
-            userSearchResults.value = emptyList()
+            onResult(emptyList())
             return
         }
 
@@ -239,17 +240,13 @@ fun createGroup(
                     .await()
 
                 val users = querySnapshot.documents.mapNotNull { document ->
-                    try {
-                        document.toObject(User::class.java)?.apply { userId = document.id }
-                    } catch (e: Exception) {
-                        Log.e("SearchUsers", "Error converting document to User", e)
-                        null
-                    }
+                    document.toObject(User::class.java)?.apply { userId = document.id }
                 }
-                userSearchResults.value = users
+
+                onResult(users)
             } catch (e: Exception) {
-                Log.e("SearchUsers", "Failed to search users", e)
-                userSearchResults.value = emptyList()  // Ensure the UI is updated even on error.
+                Log.e("SearchUsers", "Error searching users", e)
+                onResult(emptyList())
             } finally {
                 inProgress.value = false
             }
@@ -257,27 +254,27 @@ fun createGroup(
     }
 
    // function to invite users to groups membership, invited users status is invited.
-   fun inviteUserToGroup(groupId: String, userId: String) {
+   fun inviteUserToGroup(groupId: String, inviteeId: String, onComplete: (Boolean) -> Unit) {
        val membershipData = mapOf("status" to "invited")
-       val roleData = mapOf(userId to "member") // Add user as a member in roles
+       val roleData = mapOf(inviteeId to "member")
 
-       database.reference.child("groups").child(groupId).child("memberships").child(userId)
+       database.reference.child("groups").child(groupId).child("memberships").child(inviteeId)
            .setValue(membershipData)
            .addOnSuccessListener {
-               Log.d("InviteUser", "Successfully invited user $userId to group $groupId")
-
-               // Add role
-               database.reference.child("groups").child(groupId).child("roles").child(userId)
-                   .setValue("member")
+               database.reference.child("groups").child(groupId).child("roles").child(inviteeId)
+                   .setValue(roleData)
                    .addOnSuccessListener {
-                       Log.d("InviteUser", "Successfully added role for user $userId in group $groupId")
+                       Log.d("InviteUserToGroup", "User $inviteeId invited to group $groupId")
+                       onComplete(true)
                    }
                    .addOnFailureListener { e ->
-                       Log.e("InviteUser", "Error adding role to group: ${e.message}")
+                       Log.e("InviteUserToGroup", "Error updating role: ${e.message}")
+                       onComplete(false)
                    }
            }
            .addOnFailureListener { e ->
-               Log.e("InviteUser", "Error inviting user to group: ${e.message}")
+               Log.e("InviteUserToGroup", "Error inviting user: ${e.message}")
+               onComplete(false)
            }
    }
 
@@ -289,13 +286,12 @@ fun fetchUserGroups(onResult: (List<Map<String, Any>>) -> Unit) {
     database.reference.child("groups").get()
         .addOnSuccessListener { dataSnapshot ->
             val groups = dataSnapshot.children.mapNotNull { groupSnapshot ->
-                val groupData = groupSnapshot.value as? Map<String, Any> ?: return@mapNotNull null
+                val groupData = groupSnapshot.value as? Map<String, Any>
                 val memberships = groupSnapshot.child("memberships").value as? Map<String, Map<String, String>>
-                val userStatus = memberships?.get(userId)?.get("status") // Status: "joined" or "invited"
+                val userStatus = memberships?.get(userId)?.get("status")
 
-                // Include groups where the user is "joined", "invited", or the "creator"
-                if (userStatus == "joined" || userStatus == "invited" || groupData["creator"] == userId) {
-                    groupData.toMutableMap().apply {
+                if (userStatus in listOf("joined", "invited") || groupData?.get("creator") == userId) {
+                    groupData?.toMutableMap()?.apply {
                         put("id", groupSnapshot.key ?: "")
                         put("userStatus", userStatus ?: "none")
                     }
@@ -303,8 +299,6 @@ fun fetchUserGroups(onResult: (List<Map<String, Any>>) -> Unit) {
                     null
                 }
             }
-
-            Log.d("FetchUserGroups", "Filtered groups: $groups")
             onResult(groups)
         }
         .addOnFailureListener { e ->
@@ -313,39 +307,39 @@ fun fetchUserGroups(onResult: (List<Map<String, Any>>) -> Unit) {
         }
 }
 
-    fun fetchMyGroups(onResult: (List<Map<String, Any>>) -> Unit) {
-        val userId = auth.currentUser?.uid ?: return
-
-        // Fetch memberships where the logged-in user is the userId
-        fireStore.collectionGroup("memberships")
-            .whereEqualTo("userId", userId)
-            .get()
-            .addOnSuccessListener { membershipSnapshot ->
-                val groupIds = membershipSnapshot.documents.mapNotNull { it.reference.parent.parent?.id }
-
-                if (groupIds.isNotEmpty()) {
-                    // Fetch the group details based on groupIds
-                    fireStore.collection("groups")
-                        .whereIn(FieldPath.documentId(), groupIds)
-                        .get()
-                        .addOnSuccessListener { groupSnapshot ->
-                            val groups = groupSnapshot.documents.map { it.data ?: emptyMap<String, Any>() }
-                            onResult(groups) // Return the fetched groups
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("FetchMyGroups", "Error fetching groups by IDs", e)
-                            onResult(emptyList())
-                        }
-                } else {
-                    Log.d("FetchMyGroups", "No memberships found")
-                    onResult(emptyList()) // No memberships available
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("FetchMyGroups", "Error fetching memberships", e)
-                onResult(emptyList())
-            }
-    }
+//    fun fetchMyGroups(onResult: (List<Map<String, Any>>) -> Unit) {
+//        val userId = auth.currentUser?.uid ?: return
+//
+//        // Fetch memberships where the logged-in user is the userId
+//        fireStore.collectionGroup("memberships")
+//            .whereEqualTo("userId", userId)
+//            .get()
+//            .addOnSuccessListener { membershipSnapshot ->
+//                val groupIds = membershipSnapshot.documents.mapNotNull { it.reference.parent.parent?.id }
+//
+//                if (groupIds.isNotEmpty()) {
+//                    // Fetch the group details based on groupIds
+//                    fireStore.collection("groups")
+//                        .whereIn(FieldPath.documentId(), groupIds)
+//                        .get()
+//                        .addOnSuccessListener { groupSnapshot ->
+//                            val groups = groupSnapshot.documents.map { it.data ?: emptyMap<String, Any>() }
+//                            onResult(groups) // Return the fetched groups
+//                        }
+//                        .addOnFailureListener { e ->
+//                            Log.e("FetchMyGroups", "Error fetching groups by IDs", e)
+//                            onResult(emptyList())
+//                        }
+//                } else {
+//                    Log.d("FetchMyGroups", "No memberships found")
+//                    onResult(emptyList()) // No memberships available
+//                }
+//            }
+//            .addOnFailureListener { e ->
+//                Log.e("FetchMyGroups", "Error fetching memberships", e)
+//                onResult(emptyList())
+//            }
+//    }
 
     fun fetchMyJoinedOrCreatedGroups(onResult: (List<Map<String, Any>>) -> Unit) {
         val userId = auth.currentUser?.uid ?: return
@@ -368,6 +362,33 @@ fun fetchUserGroups(onResult: (List<Map<String, Any>>) -> Unit) {
             }
             .addOnFailureListener { e ->
                 Log.e("FetchMyGroups", "Error fetching groups", e)
+                onResult(emptyList())
+            }
+    }
+
+    fun fetchPublicGroups(onResult: (List<Map<String, Any>>) -> Unit) {
+        val userId = auth.currentUser?.uid ?: return
+
+        database.reference.child("groups").get()
+            .addOnSuccessListener { dataSnapshot ->
+                val publicGroups = dataSnapshot.children.mapNotNull { groupSnapshot ->
+                    val groupData = groupSnapshot.value as? Map<String, Any> ?: return@mapNotNull null
+                    val isPublic = groupData["isPublic"] as? Boolean ?: false
+                    val creator = groupData["creator"] as? String
+                    val memberships = groupSnapshot.child("memberships").value as? Map<String, Map<String, String>>
+                    val userStatus = memberships?.get(userId)?.get("status")
+
+                    // Only include public groups where the user is NOT the creator, joined, or invited
+                    if (isPublic && creator != userId && userStatus !in listOf("joined", "invited")) {
+                        groupData.plus("id" to (groupSnapshot.key ?: ""))
+                    } else {
+                        null
+                    }
+                }
+                onResult(publicGroups)
+            }
+            .addOnFailureListener { e ->
+                Log.e("FetchPublicGroups", "Error fetching public groups", e)
                 onResult(emptyList())
             }
     }
@@ -425,6 +446,18 @@ fun fetchUserGroups(onResult: (List<Map<String, Any>>) -> Unit) {
             .addOnFailureListener { exception ->
                 Log.e("DeleteGroup", "Failed to delete group: ${exception.message}")
                 onComplete(false)
+            }
+    }
+
+    fun fetchGroupDetails(groupId: String, onComplete: (Map<String, Any>?) -> Unit) {
+        database.reference.child("groups").child(groupId).get()
+            .addOnSuccessListener { snapshot ->
+                val groupDetails = snapshot.value as? Map<String, Any>
+                onComplete(groupDetails)
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FetchGroupDetails", "Failed to fetch group details: ${exception.message}")
+                onComplete(null)
             }
     }
 

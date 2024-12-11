@@ -16,10 +16,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.tusstudygroupfinder_project.auth.CreateGroupScreen
 import com.example.tusstudygroupfinder_project.auth.CreateSessionScreen
+import com.example.tusstudygroupfinder_project.auth.GroupDetailsScreen
 import com.example.tusstudygroupfinder_project.auth.HomeScreen
 import com.example.tusstudygroupfinder_project.auth.InviteMembersScreen
 import com.example.tusstudygroupfinder_project.auth.LoginScreen
 import com.example.tusstudygroupfinder_project.auth.MainScreen
+import com.example.tusstudygroupfinder_project.auth.PublicGroupsScreen
 import com.example.tusstudygroupfinder_project.auth.SelectGroupScreen
 import com.example.tusstudygroupfinder_project.auth.SignupScreen
 import com.example.tusstudygroupfinder_project.main.NotificationMessage
@@ -61,6 +63,8 @@ sealed class DestinationScreen(val route: String) {
     object InviteMembers: DestinationScreen("InviteMembersScreen/{groupId}")
     object SelectGroupSession: DestinationScreen("selectgroup")
     object CreateSession : DestinationScreen("CreateSessionScreen/{groupId}")
+    object GroupDetailsScreen: DestinationScreen("groupDetails/{groupId}")
+    object PublicGroupsScreen: DestinationScreen("publicGroups")
 }
 
 // Composable function for the main authentication app
@@ -111,6 +115,13 @@ fun AuthenticationApp() {
         composable("CreateSessionScreen/{groupId}") { backStackEntry ->
             val groupId = backStackEntry.arguments?.getString("groupId") ?: return@composable
             CreateSessionScreen(navController, vm, groupId)
+        }
+        composable("groupDetails/{groupId}") { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+            GroupDetailsScreen(navController = navController, vm = vm, groupId = groupId)
+        }
+        composable("publicGroups") {
+            PublicGroupsScreen(navController = navController, vm = vm)
         }
 
 //        composable(DestinationScreen.Contact.route){

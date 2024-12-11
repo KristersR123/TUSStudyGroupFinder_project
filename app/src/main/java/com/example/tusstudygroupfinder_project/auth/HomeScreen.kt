@@ -13,9 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -152,7 +152,8 @@ fun HomeScreen(navController: NavController, vm: IgViewModel, groupId: String) {
                                     DropdownMenuItem(
                                         onClick = {
                                             expanded = false
-                                            // Optional: Navigate or handle click
+                                            val groupId = group["id"] as? String ?: return@DropdownMenuItem
+                                            navController.navigate("groupDetails/$groupId") // Navigate to GroupDetailsScreen
                                         }
                                     ) {
                                         val groupName = group["name"] as? String ?: "Unknown"
@@ -261,7 +262,7 @@ fun HomeScreen(navController: NavController, vm: IgViewModel, groupId: String) {
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     modifier = Modifier
-//                                        .clickable { navController.navigate(DestinationScreen.**.route) }
+                                        .clickable { navController.navigate("publicGroups") }
                                 ) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_user),

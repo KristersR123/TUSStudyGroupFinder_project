@@ -125,8 +125,26 @@ fun SelectGroupScreen(navController: NavController, vm: IgViewModel) {
             Button(
                 onClick = {
                     val group = userGroups.find { it["id"] == selectedGroup }
-                    val roles = group?.get("roles") as? Map<String, String>
-                    val currentUserRole = roles?.get(vm.auth.currentUser?.uid)
+                    val roles = group?.get("roles")
+
+                    // Handle both flat and nested roles structures
+                    val currentUserRole = vm.auth.currentUser?.uid?.let { userId ->
+                        when (roles) {
+                            is Map<*, *> -> {
+                                // Check if roles is a flat Map<String, String>
+                                val flatRole = roles[userId] as? String
+                                if (flatRole != null) {
+                                    flatRole
+                                } else {
+                                    // Check if roles is a nested Map<String, Map<String, String>>
+                                    val nestedRoleMap = roles[userId] as? Map<*, *>
+                                    nestedRoleMap?.values?.firstOrNull() as? String
+                                }
+                            }
+                            else -> null
+                        }
+                    }
+
                     Log.d("CreateSession", "Roles: $roles, CurrentUserRole: $currentUserRole")
                     if (currentUserRole in listOf("creator", "member")) {
                         navController.navigate("CreateSessionScreen/$selectedGroup")
@@ -135,17 +153,17 @@ fun SelectGroupScreen(navController: NavController, vm: IgViewModel) {
                         // Optionally show a Toast/Snackbar
                     }
                 },
-                    enabled = selectedGroup != null,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Go",
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                enabled = selectedGroup != null,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Go",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
 
                 Spacer(modifier = Modifier.height(24.dp))
 

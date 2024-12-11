@@ -4,16 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
@@ -29,29 +25,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.tusstudygroupfinder_project.DestinationScreen
 import com.example.tusstudygroupfinder_project.IgViewModel
-import com.example.tusstudygroupfinder_project.R
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,6 +47,7 @@ fun CreateGroupScreen(navController: NavController, vm: IgViewModel) {
     var expanded by remember { mutableStateOf(false) }
     val courseOptions = remember { listOf("Internet Systems Development", "Software Development") }
     var selectedCourse by remember { mutableStateOf(courseOptions.first()) }
+
 // Call loadUserDetails when the HomeScreen is displayed
     LaunchedEffect(Unit) {
         vm.loadUserDetails()
@@ -169,11 +155,37 @@ fun CreateGroupScreen(navController: NavController, vm: IgViewModel) {
             Spacer(modifier = Modifier.height(16.dp))
 
 
+            // Public/Private Toggle
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = isPublic,
+                        onClick = { isPublic = true },
+                        colors = RadioButtonDefaults.colors(selectedColor = Color.White)
+                    )
+                    Text("Public", color = Color.White)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = !isPublic,
+                        onClick = { isPublic = false },
+                        colors = RadioButtonDefaults.colors(selectedColor = Color.White)
+                    )
+                    Text("Private", color = Color.White)
+                }
+            }
+
+
 
             Button(
                 onClick = {
                     // This lambda now correctly receives both the status and the group ID
-                    vm.createGroup(groupName, selectedCourse) { success, groupId ->
+                    vm.createGroup(groupName, selectedCourse, isPublic) { success, groupId ->
                         if (success) {
                             // Use the group ID to navigate to the invite members screen
                             navController.navigate("InviteMembersScreen/$groupId")

@@ -46,120 +46,157 @@ fun GroupDetailsScreen(navController: NavController, vm: IgViewModel, groupId: S
             isLoading = false
         }
     }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF7E6E44))
     ) {
-        if (isLoading) {
-            Text(
-                text = "Loading...",
-                color = Color.White,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        } else {
-            groupDetails?.let { group ->
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Black)
+                    .padding(vertical = 16.dp)
+            ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Group Details",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        text = "TUS Study Group Finder",
+                        color = Color.White,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold
                     )
+                    Text(
+                        text = "MIDWEST",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                    Text(text = "Name: ${group["name"]}", color = Color.White)
-                    Text(text = "Course: ${group["course"]}", color = Color.White)
-                    Text(text = "Creator: ${group["creator"]}", color = Color.White)
-
-                    // Search for Users
-                    Column {
-                        Text(
-                            text = "Invite Members",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        OutlinedTextField(
-                            value = searchText,
-                            onValueChange = { searchText = it },
-                            label = { Text("Search Username", color = Color.White) },
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                textColor = Color.White,
-                                cursorColor = Color.White,
-                                focusedLabelColor = Color.White,
-                                focusedBorderColor = Color.White,
-                                unfocusedBorderColor = Color.Gray
-                            ),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Button(
-                            onClick = {
-                                vm.searchUsers(searchText) { results ->
-                                    userSearchResults = results
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-                            modifier = Modifier.fillMaxWidth()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFF7E6E44))
+            ) {
+                if (isLoading) {
+                    Text(
+                        text = "Loading...",
+                        color = Color.White,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                } else {
+                    groupDetails?.let { group ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
                         ) {
-                            Text("Search", color = Color.White)
-                        }
+                            Text(
+                                text = "Group Details",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(16.dp))
 
-                        // Display Search Results
-                        userSearchResults.forEach { user ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 8.dp)
-                                    .background(Color.Gray)
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
+                            Text(text = "Name: ${group["name"]}", color = Color.White)
+                            Text(text = "Course: ${group["course"]}", color = Color.White)
+                            Text(text = "Creator: ${group["creator"]}", color = Color.White)
+
+                            // Search for Users
+                            Column {
                                 Text(
-                                    text = "${user.username} (${user.email})",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold
+                                    text = "Invite Members",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
                                 )
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                OutlinedTextField(
+                                    value = searchText,
+                                    onValueChange = { searchText = it },
+                                    label = { Text("Search Username", color = Color.White) },
+                                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                                        textColor = Color.White,
+                                        cursorColor = Color.White,
+                                        focusedLabelColor = Color.White,
+                                        focusedBorderColor = Color.White,
+                                        unfocusedBorderColor = Color.Gray
+                                    ),
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
                                 Button(
                                     onClick = {
-                                        vm.inviteUserToGroup(groupId, user.userId) { success ->
-                                            if (success) {
-                                                println("User ${user.username} invited successfully to group $groupId")
-                                            } else {
-                                                println("Failed to invite user ${user.username} to group $groupId")
-                                            }
+                                        vm.searchUsers(searchText) { results ->
+                                            userSearchResults = results
                                         }
                                     },
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+                                    modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Text("Invite", color = Color.White)
+                                    Text("Search", color = Color.White)
+                                }
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // Display Search Results
+                                userSearchResults.forEach { user ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 8.dp)
+                                            .background(Color.Gray)
+                                            .padding(16.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "${user.username} (${user.email})",
+                                            color = Color.White,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        Button(
+                                            onClick = {
+                                                vm.inviteUserToGroup(
+                                                    groupId,
+                                                    user.userId
+                                                ) { success ->
+                                                    if (success) {
+                                                        println("User ${user.username} invited successfully to group $groupId")
+                                                    } else {
+                                                        println("Failed to invite user ${user.username} to group $groupId")
+                                                    }
+                                                }
+                                            },
+                                            colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
+                                        ) {
+                                            Text("Invite", color = Color.White)
+                                        }
+                                    }
                                 }
                             }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Button(
+                                onClick = { navController.navigateUp() },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(text = "Go Back", color = Color.White)
+                            }
                         }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Button(
-                        onClick = { navController.navigateUp() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(text = "Go Back", color = Color.White)
                     }
                 }
             }

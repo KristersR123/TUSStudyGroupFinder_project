@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -22,7 +21,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -43,13 +41,14 @@ fun MainScreen(navController: NavController, vm: IgViewModel) {
             .fillMaxSize()
             .background(Color(0xFF7E6E44))
     ) {
+        Spacer(modifier = Modifier.height(10.dp))
 
         Image(
             painter = painterResource(id = R.drawable.tus_image), // image used from. https://www.facebook.com/photo/?fbid=4665632226793991&set=ecnf.100071852273842
             contentDescription = "TUS Campus Image",
             modifier = Modifier
-                .width(440.dp)
-                .height(300.dp)
+                .width(400.dp)
+                .height(270.dp)
                 .clip(
                     RoundedCornerShape(
                         topStart = 0.dp,
@@ -67,7 +66,7 @@ fun MainScreen(navController: NavController, vm: IgViewModel) {
                 .padding(16.dp)
         ) {
 
-            Spacer(modifier = Modifier.height(320.dp))
+            Spacer(modifier = Modifier.height(280.dp))
 
             Text(
                 text = "TUS Study Group Finder",
@@ -126,7 +125,7 @@ fun MainScreen(navController: NavController, vm: IgViewModel) {
     ) {
 
 
-        Spacer(modifier = Modifier.height(500.dp))
+        Spacer(modifier = Modifier.height(420.dp))
 
 
         Box(

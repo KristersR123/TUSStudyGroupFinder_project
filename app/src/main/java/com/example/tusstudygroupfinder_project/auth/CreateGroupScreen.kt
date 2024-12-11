@@ -72,7 +72,7 @@ fun CreateGroupScreen(navController: NavController, vm: IgViewModel) {
                     Text(
                         text = "TUS Study Group Finder",
                         color = Color.White,
-                        fontSize = 36.sp,
+                        fontSize = 28.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
@@ -184,10 +184,10 @@ fun CreateGroupScreen(navController: NavController, vm: IgViewModel) {
 
             Button(
                 onClick = {
-                    // This lambda now correctly receives both the status and the group ID
+                    // This lambda receives both the status and the group ID
                     vm.createGroup(groupName, selectedCourse, isPublic) { success, groupId ->
                         if (success) {
-                            // Use the group ID to navigate to the invite members screen
+                            // Uses the group ID to navigate to the invite members screen
                             navController.navigate("InviteMembersScreen/$groupId")
                         } else {
 

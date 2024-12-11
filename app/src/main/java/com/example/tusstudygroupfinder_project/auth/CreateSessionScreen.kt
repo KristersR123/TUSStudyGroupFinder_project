@@ -67,7 +67,7 @@ fun CreateSessionScreen(navController: NavController, vm: IgViewModel, groupId: 
                     Text(
                         text = "TUS Study Group Finder",
                         color = Color.White,
-                        fontSize = 36.sp,
+                        fontSize = 28.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(

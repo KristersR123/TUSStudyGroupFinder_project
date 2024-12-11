@@ -71,7 +71,7 @@ fun InviteMembersScreen(navController: NavController, vm: IgViewModel, groupId: 
                     Text(
                         text = "TUS Study Group Finder",
                         color = Color.White,
-                        fontSize = 36.sp,
+                        fontSize = 28.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
@@ -123,6 +123,14 @@ fun InviteMembersScreen(navController: NavController, vm: IgViewModel, groupId: 
                 ) {
                     Text("Search", color = Color.White)
                 }
+            }
+
+            Button(
+                onClick = { navController.navigateUp() },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Go Back", color = Color.White)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -247,5 +255,6 @@ fun UserItem(user: IgViewModel.User, groupId: String, vm: IgViewModel) {
         ) {
             Text("Invite", color = Color.White)
         }
+
     }
 }

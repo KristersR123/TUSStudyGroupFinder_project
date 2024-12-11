@@ -31,14 +31,16 @@ class IgViewModel @Inject constructor(
 
     private val database = FirebaseDatabase.getInstance("https://tusstudygroupfinder-default-rtdb.europe-west1.firebasedatabase.app/")
 
-    // Mutable state variables using Jetpack Compose's mutableStateOf
+
+    // Tracks if a user is signed in (used for UI updates)
     val signedIn = mutableStateOf(false)
+    // Indicates if a process (e.g., login/signup) is ongoing (used for loading indicators)
     val inProgress = mutableStateOf(false)
-    val popupNotification =
-        mutableStateOf<Event<String>?>(null)
+    // Stores popup notifications for user feedback
+    val popupNotification = mutableStateOf<Event<String>?>(null)
 
 
-    // Function to handle user signup
+    // Handles user signup and stores additional information in Firestore
     fun onSignup(email: String, pass: String, course: String, username: String) {
         viewModelScope.launch {
             inProgress.value = true
@@ -74,9 +76,9 @@ class IgViewModel @Inject constructor(
     }
 
 
-    // Function to handle user login
+    // Handles user login with email and password
     fun login(email: String, pass: String) {
-        inProgress.value = true
+        inProgress.value = true // Start loading indicator
 
         auth.signInWithEmailAndPassword(email, pass)
             .addOnCompleteListener {
@@ -87,7 +89,7 @@ class IgViewModel @Inject constructor(
                     // Clear outdated session data
                     signedIn.value = true
                 } else {
-                    handleException(it.exception, "login failed")
+                    handleException(it.exception, "login failed") // Handle login errors
                 }
                 inProgress.value = false
             }
@@ -306,40 +308,6 @@ fun fetchUserGroups(onResult: (List<Map<String, Any>>) -> Unit) {
             onResult(emptyList())
         }
 }
-
-//    fun fetchMyGroups(onResult: (List<Map<String, Any>>) -> Unit) {
-//        val userId = auth.currentUser?.uid ?: return
-//
-//        // Fetch memberships where the logged-in user is the userId
-//        fireStore.collectionGroup("memberships")
-//            .whereEqualTo("userId", userId)
-//            .get()
-//            .addOnSuccessListener { membershipSnapshot ->
-//                val groupIds = membershipSnapshot.documents.mapNotNull { it.reference.parent.parent?.id }
-//
-//                if (groupIds.isNotEmpty()) {
-//                    // Fetch the group details based on groupIds
-//                    fireStore.collection("groups")
-//                        .whereIn(FieldPath.documentId(), groupIds)
-//                        .get()
-//                        .addOnSuccessListener { groupSnapshot ->
-//                            val groups = groupSnapshot.documents.map { it.data ?: emptyMap<String, Any>() }
-//                            onResult(groups) // Return the fetched groups
-//                        }
-//                        .addOnFailureListener { e ->
-//                            Log.e("FetchMyGroups", "Error fetching groups by IDs", e)
-//                            onResult(emptyList())
-//                        }
-//                } else {
-//                    Log.d("FetchMyGroups", "No memberships found")
-//                    onResult(emptyList()) // No memberships available
-//                }
-//            }
-//            .addOnFailureListener { e ->
-//                Log.e("FetchMyGroups", "Error fetching memberships", e)
-//                onResult(emptyList())
-//            }
-//    }
 
     fun fetchMyJoinedOrCreatedGroups(onResult: (List<Map<String, Any>>) -> Unit) {
         val userId = auth.currentUser?.uid ?: return

@@ -82,7 +82,7 @@ fun SelectGroupScreen(navController: NavController, vm: IgViewModel) {
                     Text(
                         text = "TUS Study Group Finder",
                         color = Color.White,
-                        fontSize = 36.sp,
+                        fontSize = 28.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
@@ -150,7 +150,6 @@ fun SelectGroupScreen(navController: NavController, vm: IgViewModel) {
                         navController.navigate("CreateSessionScreen/$selectedGroup")
                     } else {
                         Log.e("PermissionError", "Only creators or members can create sessions")
-                        // Optionally show a Toast/Snackbar
                     }
                 },
                 enabled = selectedGroup != null,

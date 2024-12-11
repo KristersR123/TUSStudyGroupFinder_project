@@ -20,8 +20,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,8 +36,6 @@ import androidx.navigation.NavController
 import com.example.tusstudygroupfinder_project.DestinationScreen
 import com.example.tusstudygroupfinder_project.IgViewModel
 import com.example.tusstudygroupfinder_project.R
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -133,19 +133,23 @@ fun CreateSessionScreen(navController: NavController, vm: IgViewModel, groupId: 
 
             // Submit button
             Button(onClick = {
+                val sessionData = mapOf(
+                    "sessionTitle" to sessionTitle,
+                    "date" to date,
+                    "time" to time,
+                    "location" to location,
+                    "description" to description,
+                    "createdAt" to System.currentTimeMillis()
+                )
                 vm.createSession(
                     groupId = groupId, // Pass the current groupId
-                    sessionTitle = sessionTitle,
-                    date = date,
-                    time = time,
-                    location = location,
-                    description = description
+                    sessionData = sessionData
                 ) { success ->
                     if (success) {
                         navController.navigate("home/$groupId") // Navigate back to the group home screen
                     }
                 }
-                },
+            },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
                 modifier = Modifier.fillMaxWidth()
             ) {

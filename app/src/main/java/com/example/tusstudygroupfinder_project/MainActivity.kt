@@ -2,7 +2,6 @@ package com.example.tusstudygroupfinder_project
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -11,20 +10,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.tusstudygroupfinder_project.auth.LoginScreen
-import com.example.tusstudygroupfinder_project.auth.MainScreen
-import com.example.tusstudygroupfinder_project.auth.SignupScreen
-import com.example.tusstudygroupfinder_project.auth.HomeScreen
-import com.example.tusstudygroupfinder_project.auth.CreateGroupScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.tusstudygroupfinder_project.auth.CreateGroupScreen
 import com.example.tusstudygroupfinder_project.auth.CreateSessionScreen
+import com.example.tusstudygroupfinder_project.auth.HomeScreen
 import com.example.tusstudygroupfinder_project.auth.InviteMembersScreen
+import com.example.tusstudygroupfinder_project.auth.LoginScreen
+import com.example.tusstudygroupfinder_project.auth.MainScreen
 import com.example.tusstudygroupfinder_project.auth.SelectGroupScreen
-
+import com.example.tusstudygroupfinder_project.auth.SignupScreen
 import com.example.tusstudygroupfinder_project.main.NotificationMessage
 import com.example.tusstudygroupfinder_project.ui.theme.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -96,8 +93,8 @@ fun AuthenticationApp() {
         }
 
         composable("home/{groupId}") { backStackEntry ->
-            val groupId = backStackEntry.arguments?.getString("groupId") ?: return@composable
-            HomeScreen(navController, vm, groupId) // Pass groupId to HomeScreen
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+            HomeScreen(navController, vm, groupId)
         }
         composable(DestinationScreen.GroupScreen.route) {
             CreateGroupScreen(navController, vm)

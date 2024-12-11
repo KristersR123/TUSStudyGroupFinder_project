@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
@@ -28,23 +26,21 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.navigation.NavController
-import com.example.tusstudygroupfinder_project.IgViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.tusstudygroupfinder_project.DestinationScreen
+import com.example.tusstudygroupfinder_project.IgViewModel
 import com.example.tusstudygroupfinder_project.R
 
 @Composable
@@ -54,7 +50,7 @@ fun SelectGroupScreen(navController: NavController, vm: IgViewModel) {
     var userGroups by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
 
     LaunchedEffect(Unit) {
-        vm.fetchMyJoinedGroups { groups ->
+        vm.fetchMyJoinedOrCreatedGroups { groups ->
             userGroups = groups.map { group ->
                 group.toMutableMap().apply {
                     if (!this.containsKey("id")) {
@@ -126,13 +122,15 @@ fun SelectGroupScreen(navController: NavController, vm: IgViewModel) {
                 // Go Button
             Button(
                 onClick = {
-                    selectedGroup?.let { groupId ->
-                        if (groupId.isNotEmpty()) {
-                            navController.navigate("CreateSessionScreen/$groupId")
-                            Log.d("SelectGroupScreen", "Navigating with groupId: $groupId")
-                        } else {
-                            Log.e("NavigationError", "groupId is empty")
-                        }
+                    val group = userGroups.find { it["id"] == selectedGroup }
+                    val roles = group?.get("roles") as? Map<String, String>
+                    val currentUserRole = roles?.get(vm.auth.currentUser?.uid)
+                    Log.d("CreateSession", "Roles: $roles, CurrentUserRole: $currentUserRole")
+                    if (currentUserRole in listOf("creator", "member")) {
+                        navController.navigate("CreateSessionScreen/$selectedGroup")
+                    } else {
+                        Log.e("PermissionError", "Only creators or members can create sessions")
+                        // Optionally show a Toast/Snackbar
                     }
                 },
                     enabled = selectedGroup != null,
@@ -277,14 +275,13 @@ fun DropdownMenuContent(
                     onClick = {
                         if (groupId.isNotEmpty()) {
                             onGroupSelected(groupId, groupName)
-                            Log.d("DropdownMenuContent", "Selected groupId: $groupId, groupName: $groupName")
                         } else {
-                            Log.e("DropdownMenuContent", "groupId is empty for groupName: $groupName")
+                            Log.e("DropdownMenu", "Invalid groupId")
                         }
                         expanded = false
                     }
                 ) {
-                    Text(text = groupName)
+                    Text(text = groupName, color = Color.Black)
                 }
             }
         }

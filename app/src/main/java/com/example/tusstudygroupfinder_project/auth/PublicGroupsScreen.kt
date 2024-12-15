@@ -1,5 +1,6 @@
 package com.example.tusstudygroupfinder_project.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,6 +31,7 @@ import com.example.tusstudygroupfinder_project.IgViewModel
 @Composable
 fun PublicGroupsScreen(navController: NavController, vm: IgViewModel) {
     var publicGroups by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
+    val context = LocalContext.current // Access the current context for the toast
 
     LaunchedEffect(Unit) {
         vm.fetchPublicGroups { groups ->
@@ -91,12 +94,15 @@ fun PublicGroupsScreen(navController: NavController, vm: IgViewModel) {
                         Button(
                             onClick = {
                                 val inviteeId = vm.auth.currentUser?.uid ?: return@Button
-                                // Invite the user to the group and refresh the list
                                 vm.inviteUserToGroup(groupId, inviteeId) { success ->
                                     if (success) {
                                         publicGroups = publicGroups.filter { it["id"] != groupId }
+                                        Toast.makeText(context, "Successfully Joined ${groupName}", Toast.LENGTH_SHORT).show()
                                         // Optionally refresh the "View My Groups" in HomeScreen
                                         vm.fetchUserGroups {}
+                                    }
+                                    else {
+                                        Toast.makeText(context, "Failed To Join ${groupName}", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                             },

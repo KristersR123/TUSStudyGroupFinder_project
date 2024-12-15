@@ -213,12 +213,12 @@ fun CreateSessionScreen(navController: NavController, vm: IgViewModel, groupId: 
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_user),
-                            contentDescription = "User",
+                            contentDescription = "Public Groups",
                             tint = Color.White,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(22.dp)
                         )
                         Text(
-                            text = "User",
+                            text = "Groups",
                             color = Color.White,
                             fontSize = 12.sp
                         )

@@ -270,12 +270,12 @@ fun HomeScreen(navController: NavController, vm: IgViewModel, groupId: String) {
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_user),
-                            contentDescription = "User",
+                            contentDescription = "Public Groups",
                             tint = Color.White,
                             modifier = Modifier.size(22.dp)
                         )
                         Text(
-                            text = "User",
+                            text = "Groups",
                             color = Color.White,
                             fontSize = 12.sp
                         )
@@ -283,16 +283,18 @@ fun HomeScreen(navController: NavController, vm: IgViewModel, groupId: String) {
 
                     // Settings Button
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                                .clickable { navController.navigate("contactUs") }
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_settings),
-                            contentDescription = "Settings",
+                            contentDescription = "Contact Us",
                             tint = Color.White,
                             modifier = Modifier.size(22.dp)
                         )
                         Text(
-                            text = "Settings",
+                            text = "Contact Us",
                             color = Color.White,
                             fontSize = 12.sp
                         )

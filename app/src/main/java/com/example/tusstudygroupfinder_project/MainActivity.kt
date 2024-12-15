@@ -14,11 +14,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.tusstudygroupfinder_project.auth.ContactUsScreen
 import com.example.tusstudygroupfinder_project.auth.CreateGroupScreen
 import com.example.tusstudygroupfinder_project.auth.CreateSessionScreen
 import com.example.tusstudygroupfinder_project.auth.GroupDetailsScreen
 import com.example.tusstudygroupfinder_project.auth.HomeScreen
-import com.example.tusstudygroupfinder_project.auth.InviteMembersScreen
 import com.example.tusstudygroupfinder_project.auth.LoginScreen
 import com.example.tusstudygroupfinder_project.auth.MainScreen
 import com.example.tusstudygroupfinder_project.auth.PublicGroupsScreen
@@ -65,6 +65,7 @@ sealed class DestinationScreen(val route: String) {
     object CreateSession : DestinationScreen("CreateSessionScreen/{groupId}")
     object GroupDetailsScreen: DestinationScreen("groupDetails/{groupId}")
     object PublicGroupsScreen: DestinationScreen("publicGroups")
+    object ContactUsScreen: DestinationScreen("contactUs")
 }
 
 // Composable function for the main authentication app
@@ -103,11 +104,6 @@ fun AuthenticationApp() {
         composable(DestinationScreen.GroupScreen.route) {
             CreateGroupScreen(navController, vm)
         }
-        //  InviteMembersScreen with a dynamic groupId parameter
-        composable("InviteMembersScreen/{groupId}") { backStackEntry ->
-            val groupId = backStackEntry.arguments?.getString("groupId") ?: return@composable
-            InviteMembersScreen(navController, vm, groupId)
-        }
         composable(DestinationScreen.SelectGroupSession.route){
             SelectGroupScreen(navController, vm)
         }
@@ -122,6 +118,9 @@ fun AuthenticationApp() {
         }
         composable("publicGroups") {
             PublicGroupsScreen(navController = navController, vm = vm)
+        }
+        composable("contactUs") {
+            ContactUsScreen(navController = navController, vm = vm)
         }
 
 //        composable(DestinationScreen.Contact.route){

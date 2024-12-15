@@ -1,5 +1,6 @@
 package com.example.tusstudygroupfinder_project.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,6 +49,7 @@ fun CreateGroupScreen(navController: NavController, vm: IgViewModel) {
     var expanded by remember { mutableStateOf(false) }
     val courseOptions = remember { listOf("Internet Systems Development", "Software Development") }
     var selectedCourse by remember { mutableStateOf(courseOptions.first()) }
+    val context = LocalContext.current // Access the current context for the toast
 
 // Call loadUserDetails when the HomeScreen is displayed
     LaunchedEffect(Unit) {
@@ -188,16 +191,17 @@ fun CreateGroupScreen(navController: NavController, vm: IgViewModel) {
                     vm.createGroup(groupName, selectedCourse, isPublic) { success, groupId ->
                         if (success) {
                             // Uses the group ID to navigate to the invite members screen
-                            navController.navigate("InviteMembersScreen/$groupId")
+                            navController.navigate("home/$groupId")
+                            Toast.makeText(context, "Successfully Created A Group", Toast.LENGTH_SHORT).show()
                         } else {
-
+                            Toast.makeText(context, "Failed Creating A Group", Toast.LENGTH_SHORT).show()
                         }
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
             ) {
-                Text("Create and Invite Members", color = Color.Black, fontSize = 18.sp)
+                Text("Create Group", color = Color.Black, fontSize = 18.sp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))

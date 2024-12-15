@@ -474,25 +474,26 @@ fun fetchUserGroups(onResult: (List<Map<String, Any>>) -> Unit) {
         var username: String = "",
         var email: String = ""
     )
+
+    fun sendInquiry(name: String, email: String, message: String, onComplete: (Boolean) -> Unit) {
+        val inquiry = mapOf(
+            "name" to name,
+            "email" to email,
+            "message" to message,
+            "timestamp" to System.currentTimeMillis()
+        )
+
+        fireStore.collection("inquiries")
+            .add(inquiry)
+            .addOnSuccessListener {
+                Log.d("ContactUs", "Inquiry submitted successfully.")
+                onComplete(true)
+            }
+            .addOnFailureListener { e ->
+                Log.e("ContactUs", "Failed to submit inquiry: ${e.message}")
+                onComplete(false)
+            }
+    }
 }
 
-
-    // Function to store contact information in Firestore
-//    suspend fun storeContactInFirestore(name: String, email: String, message: String) {
-//        try {
-//            val contact = hashMapOf(
-//                "name" to name,
-//                "email" to email,
-//                "message" to message
-//            )
-//
-//            // Store contact information in Firestore under the "contacts" collection
-//            fireStore.collection("contacts")
-//                .add(contact)
-//                .await()
-//
-//        } catch (e: Exception) {
-//            handleException(e, "Failed to store contact information in Firestore")
-//        }
-//    }
 

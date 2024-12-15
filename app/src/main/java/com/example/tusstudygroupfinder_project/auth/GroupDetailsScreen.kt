@@ -1,5 +1,6 @@
 package com.example.tusstudygroupfinder_project.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +41,7 @@ fun GroupDetailsScreen(navController: NavController, vm: IgViewModel, groupId: S
     var isLoading by remember { mutableStateOf(true) }
     var searchText by remember { mutableStateOf("") }
     var userSearchResults by remember { mutableStateOf<List<IgViewModel.User>>(emptyList()) }
+    val context = LocalContext.current // Access the current context for the toast
 
     LaunchedEffect(groupId) {
         vm.fetchGroupDetails(groupId) { details ->
@@ -108,7 +111,7 @@ fun GroupDetailsScreen(navController: NavController, vm: IgViewModel, groupId: S
 
                             Text(text = "Name: ${group["name"]}", color = Color.White)
                             Text(text = "Course: ${group["course"]}", color = Color.White)
-                            Text(text = "Creator: ${group["creator"]}", color = Color.White)
+//                            Text(text = "Creator: ${group["creator"]}", color = Color.White) // creator id for testing.
 
                             // Search for Users
                             Column {
@@ -173,9 +176,9 @@ fun GroupDetailsScreen(navController: NavController, vm: IgViewModel, groupId: S
                                                     user.userId
                                                 ) { success ->
                                                     if (success) {
-                                                        println("User ${user.username} invited successfully to group $groupId")
+                                                        Toast.makeText(context, "Successfully invited ${user.username}", Toast.LENGTH_SHORT).show()
                                                     } else {
-                                                        println("Failed to invite user ${user.username} to group $groupId")
+                                                        Toast.makeText(context, "Failed to invite ${user.username}", Toast.LENGTH_SHORT).show()
                                                     }
                                                 }
                                             },

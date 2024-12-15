@@ -45,6 +45,7 @@ import com.example.tusstudygroupfinder_project.IgViewModel
 fun CreateGroupScreen(navController: NavController, vm: IgViewModel) {
 
     var groupName by remember { mutableStateOf("") }
+    var groupNameError by remember { mutableStateOf(false) }
     var isPublic by remember { mutableStateOf(true) }
     var expanded by remember { mutableStateOf(false) }
     val courseOptions = remember { listOf("Internet Systems Development", "Software Development") }
@@ -98,12 +99,16 @@ fun CreateGroupScreen(navController: NavController, vm: IgViewModel) {
 
             OutlinedTextField(
                 value = groupName,
-                onValueChange = { groupName = it },
-                label = { Text("Enter Group Name", color = Color.White ) },
+                onValueChange = {
+                    groupName = it
+                    groupNameError = it.isEmpty() // Trigger error if the input is empty
+                },
+                label = { Text("Enter Group Name", color = Color.White) },
+                isError = groupNameError, // Apply error state
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     textColor = Color.White,
                     cursorColor = Color.White,
-                    focusedLabelColor =  Color.White,
+                    focusedLabelColor = Color.White,
                     focusedBorderColor = Color.White,
                     unfocusedBorderColor = Color.White
                 ),
@@ -111,6 +116,14 @@ fun CreateGroupScreen(navController: NavController, vm: IgViewModel) {
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             )
+            if (groupNameError) {
+                Text(
+                    text = "Group name is required",
+                    color = Color.Red,
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -185,21 +198,28 @@ fun CreateGroupScreen(navController: NavController, vm: IgViewModel) {
 
 
 
+            // Create Group Button
             Button(
                 onClick = {
-                    // This lambda receives both the status and the group ID
-                    vm.createGroup(groupName, selectedCourse, isPublic) { success, groupId ->
-                        if (success) {
-                            // Uses the group ID to navigate to the invite members screen
-                            navController.navigate("home/$groupId")
-                            Toast.makeText(context, "Successfully Created A Group", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(context, "Failed Creating A Group", Toast.LENGTH_SHORT).show()
+                    groupNameError = groupName.isEmpty() // Validate group name
+
+                    if (!groupNameError) {
+                        vm.createGroup(groupName, selectedCourse, isPublic) { success, groupId ->
+                            if (success) {
+                                navController.navigate("home/$groupId")
+                                Toast.makeText(context, "Successfully Created A Group", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, "Failed Creating A Group", Toast.LENGTH_SHORT).show()
+                            }
                         }
+                    } else {
+                        Toast.makeText(context, "Please fill out all required fields", Toast.LENGTH_SHORT).show()
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
                 Text("Create Group", color = Color.Black, fontSize = 18.sp)
             }

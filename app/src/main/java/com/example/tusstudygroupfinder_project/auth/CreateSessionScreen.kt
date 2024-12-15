@@ -1,6 +1,7 @@
 package com.example.tusstudygroupfinder_project.auth
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -45,6 +47,12 @@ fun CreateSessionScreen(navController: NavController, vm: IgViewModel, groupId: 
     var time by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    val context = LocalContext.current // Access the current context for the toast
+    // Error states
+    var sessionTitleError by remember { mutableStateOf(false) }
+    var dateError by remember { mutableStateOf(false) }
+    var timeError by remember { mutableStateOf(false) }
+    var locationError by remember { mutableStateOf(false) }
 
     Log.d("CreateSessionScreen", "Received groupId: $groupId")
 
@@ -96,31 +104,59 @@ fun CreateSessionScreen(navController: NavController, vm: IgViewModel, groupId: 
             // Input fields
             OutlinedTextField(
                 value = sessionTitle,
-                onValueChange = { sessionTitle = it },
+                onValueChange = {
+                    sessionTitle = it
+                    sessionTitleError = it.isEmpty()
+                },
                 label = { Text("Session Title", color = Color.White) },
+                isError = sessionTitleError,
                 modifier = Modifier.fillMaxWidth()
             )
+            if (sessionTitleError) {
+                Text("Session Title is required", color = Color.Red, fontSize = 12.sp)
+            }
 
             OutlinedTextField(
                 value = date,
-                onValueChange = { date = it },
+                onValueChange = {
+                    date = it
+                    dateError = it.isEmpty()
+                },
                 label = { Text("Date (YYYY-MM-DD)", color = Color.White) },
-                modifier = Modifier.fillMaxWidth()
+                isError = dateError,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
             )
+            if (dateError) {
+                Text("Date is required", color = Color.Red, fontSize = 12.sp)
+            }
 
             OutlinedTextField(
                 value = time,
-                onValueChange = { time = it },
+                onValueChange = {
+                    time = it
+                    timeError = it.isEmpty()
+                },
                 label = { Text("Time (HH:MM)", color = Color.White) },
-                modifier = Modifier.fillMaxWidth()
+                isError = timeError,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
             )
+            if (timeError) {
+                Text("Time is required", color = Color.Red, fontSize = 12.sp)
+            }
 
             OutlinedTextField(
                 value = location,
-                onValueChange = { location = it },
+                onValueChange = {
+                    location = it
+                    locationError = it.isEmpty()
+                },
                 label = { Text("Location or Link", color = Color.White) },
-                modifier = Modifier.fillMaxWidth()
+                isError = locationError,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
             )
+            if (locationError) {
+                Text("Location is required", color = Color.Red, fontSize = 12.sp)
+            }
 
             OutlinedTextField(
                 value = description,
@@ -131,31 +167,44 @@ fun CreateSessionScreen(navController: NavController, vm: IgViewModel, groupId: 
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Submit button
-            Button(onClick = {
-                val sessionData = mapOf(
-                    "sessionTitle" to sessionTitle,
-                    "date" to date,
-                    "time" to time,
-                    "location" to location,
-                    "description" to description,
-                    "createdAt" to System.currentTimeMillis()
-                )
-                vm.createSession(
-                    groupId = groupId, // Pass the current groupId
-                    sessionData = sessionData
-                ) { success ->
-                    if (success) {
-                        navController.navigate("home/$groupId") // Navigate back to the group home screen
+            // Submit Button
+            Button(
+                onClick = {
+                    // Validate fields
+                    sessionTitleError = sessionTitle.isEmpty()
+                    dateError = date.isEmpty()
+                    timeError = time.isEmpty()
+                    locationError = location.isEmpty()
+
+                    if (!sessionTitleError && !dateError && !timeError && !locationError) {
+                        val sessionData = mapOf(
+                            "sessionTitle" to sessionTitle,
+                            "date" to date,
+                            "time" to time,
+                            "location" to location,
+                            "description" to description,
+                            "createdAt" to System.currentTimeMillis()
+                        )
+                        vm.createSession(
+                            groupId = groupId, // Pass the current groupId
+                            sessionData = sessionData
+                        ) { success ->
+                            if (success) {
+                                navController.navigate("home/$groupId") // Navigate back to the group home screen
+                                Toast.makeText(context, "Successfully Created A Session", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, "Failed Creating A Session", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(context, "Please fill out all required fields", Toast.LENGTH_SHORT).show()
                     }
-                }
-            },
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Create Session", color = Color.White)
             }
-
 
 
             // Go Back Button

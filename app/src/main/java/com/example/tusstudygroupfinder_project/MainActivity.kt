@@ -2,6 +2,7 @@ package com.example.tusstudygroupfinder_project
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -27,6 +28,7 @@ import com.example.tusstudygroupfinder_project.auth.SignupScreen
 import com.example.tusstudygroupfinder_project.main.NotificationMessage
 import com.example.tusstudygroupfinder_project.ui.theme.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.String
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -45,7 +47,9 @@ class MainActivity : ComponentActivity() {
                     AuthenticationApp()
                 }
             }
+
         }
+
     }
 }
 
@@ -77,6 +81,9 @@ fun AuthenticationApp() {
 
     // Create a NavController to manage navigation within the app
     val navController = rememberNavController()
+
+    // Initialize Room Database Test
+    TestRoomDatabase(vm)
 
     // Display notifications using the NotificationMessage composable
     NotificationMessage(vm)
@@ -128,5 +135,35 @@ fun AuthenticationApp() {
 //        }
 
     }
+}
+
+@Composable
+fun TestRoomDatabase(vm: IgViewModel) {
+    // Test Room Database by caching and fetching groups
+    val testGroup = GroupEntity(
+        groupId = "2",
+        groupName = "Test",
+        course = "Test Course",
+        isPublic = true
+    )
+    // Cache group data into Room
+    vm.cacheGroups(listOf(testGroup))
+
+    vm.getCachedGroups { groups ->
+        Log.d("RoomTest", "Groups fetched: $groups")
+    }
+
+    val testSession = SessionEntity(
+        groupId = "2",
+        title = "OOP",
+        date = "2024-12-15",
+        time = "17:30",
+        location = "somewhere",
+        description = "hello",
+        sessionId = "2"
+    )
+    // Cache session data into Room
+    vm.cacheSessions(listOf(testSession))
+
 }
 

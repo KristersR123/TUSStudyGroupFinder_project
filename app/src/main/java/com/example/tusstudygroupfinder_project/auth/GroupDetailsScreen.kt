@@ -192,6 +192,26 @@ fun GroupDetailsScreen(navController: NavController, vm: IgViewModel, groupId: S
 
                             Spacer(modifier = Modifier.height(16.dp))
 
+                            // "Leave Group" Button
+                            Button(
+                                onClick = {
+                                    vm.leaveGroup(groupId) { success ->
+                                        if (success) {
+                                            Toast.makeText(context, "Left group successfully", Toast.LENGTH_SHORT).show()
+                                            navController.navigateUp()
+                                        } else {
+                                            Toast.makeText(context, "Failed to leave group", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(text = "Leave Group", color = Color.White)
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
                             Button(
                                 onClick = { navController.navigateUp() },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),

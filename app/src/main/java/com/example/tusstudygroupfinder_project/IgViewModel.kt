@@ -13,6 +13,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
@@ -26,7 +27,9 @@ import javax.inject.Inject
 @HiltViewModel
 class IgViewModel @Inject constructor(
     val auth: FirebaseAuth,
-    private val fireStore: FirebaseFirestore
+    private val fireStore: FirebaseFirestore,
+    private val groupDao: GroupDao,
+    private val sessionDao: SessionDao
 ) : ViewModel() {
 
     private val database = FirebaseDatabase.getInstance("https://tusstudygroupfinder-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -429,6 +432,25 @@ fun fetchUserGroups(onResult: (List<Map<String, Any>>) -> Unit) {
             }
     }
 
+    fun leaveGroup(groupId: String, onComplete: (Boolean) -> Unit) {
+        val userId = auth.currentUser?.uid ?: return onComplete(false)
+
+        viewModelScope.launch {
+            try {
+                // Remove user from the group's memberships in Firebase
+                database.reference.child("groups").child(groupId).child("memberships").child(userId).removeValue().await()
+
+
+                Log.d("LeaveGroup", "User $userId successfully left group $groupId")
+                onComplete(true)
+            } catch (e: Exception) {
+                Log.e("LeaveGroup", "Error leaving group: ${e.message}")
+                onComplete(false)
+            }
+        }
+    }
+
+
 
     val allSessions = mutableStateOf<List<Map<String, Any>>>(emptyList())
     val isLoading = mutableStateOf(false)
@@ -494,6 +516,34 @@ fun fetchUserGroups(onResult: (List<Map<String, Any>>) -> Unit) {
                 onComplete(false)
             }
     }
+
+
+    fun cacheGroups(groups: List<GroupEntity>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            groupDao.insertGroups(groups)
+        }
+    }
+
+    fun cacheSessions(sessions: List<SessionEntity>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            sessionDao.insertSessions(sessions)
+        }
+    }
+
+    fun getCachedGroups(onComplete: (List<GroupEntity>) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val groups = groupDao.getGroups()
+            onComplete(groups)
+        }
+    }
+
+//    fun getCachedSessions(groupId: String, onComplete: (List<SessionEntity>) -> Unit) {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            val sessions = sessionDao.getSessionsForGroup(groupId)
+//            onComplete(sessions)
+//        }
+//    }
 }
+
 
 

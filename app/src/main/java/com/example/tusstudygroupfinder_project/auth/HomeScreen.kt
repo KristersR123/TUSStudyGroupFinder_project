@@ -51,6 +51,7 @@ fun HomeScreen(navController: NavController, vm: IgViewModel, groupId: String) {
         vm.fetchUserGroups { groups ->
             userGroups = groups
         }
+
         vm.fetchAllSessionsForUserGroups()
     }
 

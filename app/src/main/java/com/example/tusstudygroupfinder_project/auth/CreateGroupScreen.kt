@@ -156,7 +156,7 @@ fun CreateGroupScreen(navController: NavController, vm: IgViewModel) {
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).background(Color.DarkGray)
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
             ) {
                 courseOptions.forEach { course ->
                     DropdownMenuItem(onClick = {

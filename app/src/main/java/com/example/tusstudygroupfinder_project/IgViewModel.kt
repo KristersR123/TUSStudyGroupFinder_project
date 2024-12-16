@@ -44,7 +44,7 @@ class IgViewModel @Inject constructor(
 
 
     // Handles user signup and stores additional information in Firestore
-    fun onSignup(email: String, pass: String, course: String, username: String) {
+    fun onSignup(email: String, pass: String, username: String) {
         viewModelScope.launch {
             inProgress.value = true
 
@@ -59,10 +59,8 @@ class IgViewModel @Inject constructor(
                     // Store user information in Firestore
                     val userId = result.user?.uid
                     if (userId != null) {
-                        storeUserInFirestore(userId, email, pass, course, username)
+                        storeUserInFirestore(userId, email, pass, username)
 
-                        // Call the function to store the timetable
-//                        storeTimetableInFirestore(userId, course)
                     }
                 } else {
                     // User creation failed
@@ -135,14 +133,12 @@ class IgViewModel @Inject constructor(
         userId: String,
         email: String,
         pass: String,
-        course: String,
         username: String
     ) {
         try {
             val user = hashMapOf(
                 "email" to email,
                 "password" to pass,
-                "course" to course, // Add the course information
                 "username" to username
             )
 
@@ -158,7 +154,7 @@ class IgViewModel @Inject constructor(
         } catch (e: Exception) {
             handleException(e, "Failed to store user information (included password) in Firestore")
         }
-        Log.d("Signup", "Storing user: Email: $email, Username: $username, Course: $course")
+        Log.d("Signup", "Storing user: Email: $email, Username: $username")
 
     }
 

@@ -47,12 +47,15 @@ fun CreateSessionScreen(navController: NavController, vm: IgViewModel, groupId: 
     var time by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    var selectedRoom by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current // Access the current context for the toast
     // Error states
     var sessionTitleError by remember { mutableStateOf(false) }
     var dateError by remember { mutableStateOf(false) }
     var timeError by remember { mutableStateOf(false) }
     var locationError by remember { mutableStateOf(false) }
+
+    val roomOptions = listOf("3A01", "1B20", "1A15") // Hardcoded some rooms
 
     Log.d("CreateSessionScreen", "Received groupId: $groupId")
 
@@ -120,39 +123,65 @@ fun CreateSessionScreen(navController: NavController, vm: IgViewModel, groupId: 
                 value = date,
                 onValueChange = {
                     date = it
-                    dateError = it.isEmpty()
+                    dateError = !Regex("\\d{4}-\\d{2}-\\d{2}").matches(it)
                 },
                 label = { Text("Date (YYYY-MM-DD)", color = Color.White) },
                 isError = dateError,
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
             )
             if (dateError) {
-                Text("Date is required", color = Color.Red, fontSize = 12.sp)
+                Text("Enter a valid date in YYYY-MM-DD format", color = Color.Red, fontSize = 12.sp)
             }
 
             OutlinedTextField(
                 value = time,
                 onValueChange = {
                     time = it
-                    timeError = it.isEmpty()
+                    timeError = !Regex("\\d{2}:\\d{2}").matches(it)
                 },
                 label = { Text("Time (HH:MM)", color = Color.White) },
                 isError = timeError,
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
             )
             if (timeError) {
-                Text("Time is required", color = Color.Red, fontSize = 12.sp)
+                Text("Enter a valid time in HH:MM format", color = Color.Red, fontSize = 12.sp)
             }
 
+            Text(
+                text = "Location",
+                color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            // Room options
+            Column {
+                roomOptions.forEach { room ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .clickable { selectedRoom = if (selectedRoom == room) null else room },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = room,
+                            color = if (selectedRoom == room) Color.Green else Color.White,
+                            fontWeight = if (selectedRoom == room) FontWeight.Bold else FontWeight.Normal
+                        )
+                    }
+                }
+            }
+
+
+            // Custom hyperlink input
             OutlinedTextField(
                 value = location,
-                onValueChange = {
-                    location = it
-                    locationError = it.isEmpty()
-                },
-                label = { Text("Location or Link", color = Color.White) },
+                onValueChange = { location = it },
+                label = { Text("Custom Location (Link)", color = Color.White) },
+                enabled = selectedRoom == null,
                 isError = locationError,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                modifier = Modifier.fillMaxWidth().background(if (selectedRoom != null) Color.Gray else Color.Transparent)
             )
             if (locationError) {
                 Text("Location is required", color = Color.Red, fontSize = 12.sp)
@@ -170,34 +199,30 @@ fun CreateSessionScreen(navController: NavController, vm: IgViewModel, groupId: 
             // Submit Button
             Button(
                 onClick = {
-                    // Validate fields
                     sessionTitleError = sessionTitle.isEmpty()
-                    dateError = date.isEmpty()
-                    timeError = time.isEmpty()
-                    locationError = location.isEmpty()
+                    dateError = !Regex("\\d{4}-\\d{2}-\\d{2}").matches(date)
+                    timeError = !Regex("\\d{2}:\\d{2}").matches(time)
+                    locationError = location.isEmpty() && selectedRoom == null
 
                     if (!sessionTitleError && !dateError && !timeError && !locationError) {
+                        val finalLocation = selectedRoom ?: location
                         val sessionData = mapOf(
                             "sessionTitle" to sessionTitle,
                             "date" to date,
                             "time" to time,
-                            "location" to location,
-                            "description" to description,
-                            "createdAt" to System.currentTimeMillis()
+                            "location" to finalLocation,
+                            "description" to description
                         )
-                        vm.createSession(
-                            groupId = groupId, // Pass the current groupId
-                            sessionData = sessionData
-                        ) { success ->
+                        vm.createSession(groupId, sessionData) { success ->
                             if (success) {
-                                navController.navigate("home/$groupId") // Navigate back to the group home screen
-                                Toast.makeText(context, "Successfully Created A Session", Toast.LENGTH_SHORT).show()
+                                navController.navigate("home/$groupId")
+                                Toast.makeText(context, "Session created successfully", Toast.LENGTH_SHORT).show()
                             } else {
-                                Toast.makeText(context, "Failed Creating A Session", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Failed to create session", Toast.LENGTH_SHORT).show()
                             }
                         }
                     } else {
-                        Toast.makeText(context, "Please fill out all required fields", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Please correct the highlighted errors", Toast.LENGTH_SHORT).show()
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),

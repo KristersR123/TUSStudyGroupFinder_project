@@ -2,6 +2,7 @@ package com.example.tusstudygroupfinder_project.auth
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,10 +34,14 @@ import com.example.tusstudygroupfinder_project.IgViewModel
 fun PublicGroupsScreen(navController: NavController, vm: IgViewModel) {
     var publicGroups by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
     val context = LocalContext.current // Access the current context for the toast
+    var filteredGroups by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
+    var selectedCourse by remember { mutableStateOf<String?>(null) }
+    val courses = listOf("Internet Systems Development", "Software Development", "Data Science") // List of Courses
 
     LaunchedEffect(Unit) {
         vm.fetchPublicGroups { groups ->
             publicGroups = groups
+            filteredGroups = groups // Initially show all groups
         }
     }
 
@@ -82,12 +88,53 @@ fun PublicGroupsScreen(navController: NavController, vm: IgViewModel) {
             ) {
                 Text("Public Groups", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
 
+                // Dropdown for selecting a course
+                Text("Filter by Course:", fontSize = 16.sp, color = Color.White)
+                Spacer(modifier = Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.Gray)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    var expanded by remember { mutableStateOf(false) }
+                    Text(
+                        text = selectedCourse ?: "Select a Course",
+                        color = Color.White,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { expanded = true }
+                            .padding(vertical = 8.dp)
+                    )
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        courses.forEach { course ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    selectedCourse = course
+                                    filteredGroups = if (course.isNotEmpty()) {
+                                        publicGroups.filter { it["course"] == course }
+                                    } else {
+                                        publicGroups
+                                    }
+                                    expanded = false
+                                }
+                            ) {
+                                Text(course)
+                            }
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (publicGroups.isEmpty()) {
-                    Text("No public groups available.", color = Color.White)
+                // Display filtered groups
+                if (filteredGroups.isEmpty()) {
+                    Text("No public groups available for the selected course.", color = Color.White)
                 } else {
-                    publicGroups.forEach { group ->
+                    filteredGroups.forEach { group ->
                         val groupName = group["name"] as? String ?: "Unknown"
                         val groupId = group["id"] as? String ?: ""
 
@@ -97,12 +144,12 @@ fun PublicGroupsScreen(navController: NavController, vm: IgViewModel) {
                                 vm.inviteUserToGroup(groupId, inviteeId) { success ->
                                     if (success) {
                                         publicGroups = publicGroups.filter { it["id"] != groupId }
-                                        Toast.makeText(context, "Successfully Joined ${groupName}", Toast.LENGTH_SHORT).show()
+                                        filteredGroups = filteredGroups.filter { it["id"] != groupId }
+                                        Toast.makeText(context, "Successfully Joined $groupName", Toast.LENGTH_SHORT).show()
                                         // Optionally refresh the "View My Groups" in HomeScreen
                                         vm.fetchUserGroups {}
-                                    }
-                                    else {
-                                        Toast.makeText(context, "Failed To Join ${groupName}", Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        Toast.makeText(context, "Failed To Join $groupName", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                             },
@@ -110,12 +157,12 @@ fun PublicGroupsScreen(navController: NavController, vm: IgViewModel) {
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
-
                         ) {
                             Text(groupName, fontSize = 18.sp)
                         }
                     }
                 }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(

@@ -188,6 +188,16 @@ fun ContactUsScreen(navController: NavController, vm: IgViewModel) {
                 ) {
                     Text("Send", color = Color.White)
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { navController.navigateUp() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "Go Back", color = Color.White)
+                }
             }
         }
     }

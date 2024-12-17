@@ -43,6 +43,15 @@ import com.example.tusstudygroupfinder_project.DestinationScreen
 import com.example.tusstudygroupfinder_project.IgViewModel
 import com.example.tusstudygroupfinder_project.R
 
+
+/**
+ * TUS Study Group Finder Project
+ * File: SelectGroupScreen.kt
+ * Description: Enables users to select one of their created or joined groups. Provides options to create sessions
+ *              for the selected group and delete the group if needed.
+ * Author: Kristers Rakstins - K00273773
+ */
+
 @Composable
 fun SelectGroupScreen(navController: NavController, vm: IgViewModel) {
     var selectedGroup by remember { mutableStateOf<String?>(null) }

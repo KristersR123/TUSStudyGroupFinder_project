@@ -40,6 +40,18 @@
 
 ## Week :three:
 - FEATURES THAT HAVE BEEN COMPLETED (:heavy_check_mark:)
-  - 
-  -
+  - Create Session Screen ✔️
+  - Updated Main Screen with study sessions ✔️
+  - Implemented GPS Markers to show location of study room ✔️
+  - Added invited groups in view my groups ✔️
+  - Added Group Details Page ✔️
+  - Added Public Groups Screen ✔️
+  - Added Room API to store hardcoded groups ✔️
+  - Added Comments + headers to each .kt file ✔️
+  - Launcher Icon = Made myself via Paint 3D ✔️
+  - Fixed Formatting of form submissions ✔️ 
+  - Deleted Course Selecting in Signup screen ✔️
+  - Added Contact.kt ✔️
+  - Added Delete group function inside CreateSessionScreen ✔️
+  - Added "Leave Group" function inside GroupDetailsScreen ✔️
  

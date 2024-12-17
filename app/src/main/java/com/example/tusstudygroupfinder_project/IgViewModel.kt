@@ -84,7 +84,7 @@ class IgViewModel @Inject constructor(
         auth.signInWithEmailAndPassword(email, pass)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    signedIn.value = true
+                    signedIn.value = true // Mark user as signed in
                     handleException(it.exception, "login successful")
 
                     // Clear outdated session data
@@ -99,16 +99,16 @@ class IgViewModel @Inject constructor(
 
     // Function to handle exceptions and display error messages
     fun handleException(exception: Exception? = null, customMessage: String = "") {
-        exception?.printStackTrace()
+        exception?.printStackTrace() // Print stack trace for debugging
         val errorMsg = exception?.localizedMessage ?: ""
         val message = if (customMessage.isEmpty()) errorMsg else "$customMessage: $errorMsg"
-        popupNotification.value = Event(message)
+        popupNotification.value = Event(message) // Show error to the user
     }
 
     // Function to handle user logout
     fun logout() {
-        auth.signOut()
-        signedIn.value = false
+        auth.signOut() // Sign out the user
+        signedIn.value = false // Update the UI state
     }
 
 
@@ -121,7 +121,8 @@ class IgViewModel @Inject constructor(
                     val docSnapshot = fireStore.collection("users").document(userId).get().await()
                     userName = docSnapshot.getString("username") ?: ""
                 } catch (e: Exception) {
-                    // Handle exceptions, e.g., show an error message
+                    // Handle any exceptions during user data loading
+                    handleException(e, "Failed to load user information")
                 }
             }
         }
@@ -148,8 +149,6 @@ class IgViewModel @Inject constructor(
                 .set(user)
                 .await()
 
-            // Call the function to store the timetable
-//            storeTimetableInFirestore(userId, course)
 
         } catch (e: Exception) {
             handleException(e, "Failed to store user information (included password) in Firestore")
@@ -163,65 +162,65 @@ class IgViewModel @Inject constructor(
     var userEmail by mutableStateOf("")
     var userMessage by mutableStateOf("")
 
+    // Creates a new group
+    fun createGroup(
+        groupName: String,
+        course: String,
+        isPublic: Boolean,
+        onComplete: (Boolean, String?) -> Unit
+    ) {
+        val userId = auth.currentUser?.uid ?: return onComplete(false, null)
+        val groupId = database.reference.child("groups").push().key ?: return onComplete(false, null)
 
-fun createGroup(
-    groupName: String,
-    course: String,
-    isPublic: Boolean,
-    onComplete: (Boolean, String?) -> Unit
-) {
-    val userId = auth.currentUser?.uid ?: return onComplete(false, null)
-    val groupId = database.reference.child("groups").push().key ?: return onComplete(false, null)
+        val groupData = mapOf(
+            "name" to groupName,
+            "course" to course,
+            "creator" to userId,
+            "isPublic" to isPublic
+        )
 
-    val groupData = mapOf(
-        "name" to groupName,
-        "course" to course,
-        "creator" to userId,
-        "isPublic" to isPublic
-    )
+        val membershipData = mapOf(
+            userId to mapOf("status" to "joined")
+        )
 
-    val membershipData = mapOf(
-        userId to mapOf("status" to "joined")
-    )
+        val rolesData = mapOf(
+            userId to "creator" // Add creator to roles
+        )
 
-    val rolesData = mapOf(
-        userId to "creator" // Add creator to roles
-    )
+        Log.d("Firebase", "Attempting to create group: $groupData")
+        // Successfully created group
+        database.reference.child("groups").child(groupId).setValue(groupData)
+            .addOnSuccessListener {
+                Log.d("Firebase", "Group created successfully: $groupId")
 
-    Log.d("Firebase", "Attempting to create group: $groupData")
+                // Add memberships
+                database.reference.child("groups").child(groupId).child("memberships")
+                    .updateChildren(membershipData)
+                    .addOnSuccessListener {
+                        Log.d("Firebase", "Membership created successfully for group: $groupId")
 
-    database.reference.child("groups").child(groupId).setValue(groupData)
-        .addOnSuccessListener {
-            Log.d("Firebase", "Group created successfully: $groupId")
-
-            // Add memberships
-            database.reference.child("groups").child(groupId).child("memberships")
-                .updateChildren(membershipData)
-                .addOnSuccessListener {
-                    Log.d("Firebase", "Membership created successfully for group: $groupId")
-
-                    // Add roles
-                    database.reference.child("groups").child(groupId).child("roles")
-                        .updateChildren(rolesData)
-                        .addOnSuccessListener {
-                            Log.d("Firebase", "Roles created successfully for group: $groupId")
-                            onComplete(true, groupId)
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("Firebase", "Error adding roles: ${e.message}")
-                            onComplete(false, null)
-                        }
-                }
-                .addOnFailureListener {
-                    Log.e("Firebase", "Error adding membership: ${it.message}")
-                    onComplete(false, null)
-                }
-        }
-        .addOnFailureListener {
-            Log.e("Firebase", "Error creating group: ${it.message}")
-            onComplete(false, null)
-        }
-}
+                        // Add roles
+                        database.reference.child("groups").child(groupId).child("roles")
+                            .updateChildren(rolesData)
+                            .addOnSuccessListener {
+                                Log.d("Firebase", "Roles created successfully for group: $groupId")
+                                onComplete(true, groupId) // Group creation successful
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("Firebase", "Error adding roles: ${e.message}")
+                                onComplete(false, null)
+                            }
+                    }
+                    .addOnFailureListener {
+                        Log.e("Firebase", "Error adding membership: ${it.message}")
+                        onComplete(false, null)
+                    }
+            }
+            .addOnFailureListener {
+                Log.e("Firebase", "Error creating group: ${it.message}")
+                onComplete(false, null)
+            }
+    }
 
     var userSearchResults = mutableStateOf<List<User>>(listOf())
 
@@ -262,6 +261,7 @@ fun createGroup(
        database.reference.child("groups").child(groupId).child("memberships").child(inviteeId)
            .setValue(membershipData)
            .addOnSuccessListener {
+               // Successfully invited user
                database.reference.child("groups").child(groupId).child("roles").child(inviteeId)
                    .setValue(roleData)
                    .addOnSuccessListener {
@@ -291,6 +291,7 @@ fun fetchUserGroups(onResult: (List<Map<String, Any>>) -> Unit) {
                 val memberships = groupSnapshot.child("memberships").value as? Map<String, Map<String, String>>
                 val userStatus = memberships?.get(userId)?.get("status")
 
+                // Only include groups that are public and the user isn't already in
                 if (userStatus in listOf("joined", "invited") || groupData?.get("creator") == userId) {
                     groupData?.toMutableMap()?.apply {
                         put("id", groupSnapshot.key ?: "")
@@ -300,11 +301,11 @@ fun fetchUserGroups(onResult: (List<Map<String, Any>>) -> Unit) {
                     null
                 }
             }
-            onResult(groups)
+            onResult(groups) // Pass the filtered groups to the callback
         }
         .addOnFailureListener { e ->
             Log.e("FetchUserGroups", "Error fetching groups", e)
-            onResult(emptyList())
+            onResult(emptyList())// Handle errors gracefully
         }
 }
 

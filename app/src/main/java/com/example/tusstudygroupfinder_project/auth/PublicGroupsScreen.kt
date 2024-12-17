@@ -30,6 +30,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tusstudygroupfinder_project.IgViewModel
 
+
+/**
+ * TUS Study Group Finder Project
+ * File: PublicGroupsScreen.kt
+ * Description: Displays a list of public study groups filtered by course. Allows users to join public groups
+ *              directly from the screen.
+ * Author: Kristers Rakstins - K00273773
+ */
+
 @Composable
 fun PublicGroupsScreen(navController: NavController, vm: IgViewModel) {
     var publicGroups by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }

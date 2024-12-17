@@ -1,5 +1,13 @@
 package com.example.tusstudygroupfinder_project
 
+/**
+ * TUS Study Group Finder Project
+ * File: Event.kt
+ * Description: A generic class to represent one-time events in the app. Ensures that events like
+ *              user notifications or state updates are handled only once.
+ * Author: Kristers Rakstins - K00273773
+ * Copied From Last Year's Project (TUS Campus Connect)
+ */
 
 // This is a generic class that holds an event content of type T.
 // It's designed to be used for one-time events in an Android app.

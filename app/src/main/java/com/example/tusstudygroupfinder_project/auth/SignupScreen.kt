@@ -46,6 +46,13 @@ import com.example.tusstudygroupfinder_project.DestinationScreen
 import com.example.tusstudygroupfinder_project.IgViewModel
 import com.example.tusstudygroupfinder_project.R
 
+/**
+ * TUS Study Group Finder Project
+ * File: SignupScreen.kt
+ * Description: Provides the UI for user registration, with input validation for email, username, and password.
+ * Author: Kristers Rakstins - K00273773
+ */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupScreen(navController: NavController, vm: IgViewModel) {

@@ -34,6 +34,14 @@ import com.example.tusstudygroupfinder_project.DestinationScreen
 import com.example.tusstudygroupfinder_project.IgViewModel
 import com.example.tusstudygroupfinder_project.R
 
+
+/**
+ * TUS Study Group Finder Project
+ * File: MainScreen.kt
+ * Description: Defines the main screen UI with options to navigate to login or signup.
+ * Author: Kristers Rakstins - K00273773
+ */
+
 @Composable
 fun MainScreen(navController: NavController, vm: IgViewModel) {
     Box(

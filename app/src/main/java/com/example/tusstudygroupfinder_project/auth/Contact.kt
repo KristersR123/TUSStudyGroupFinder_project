@@ -31,9 +31,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tusstudygroupfinder_project.IgViewModel
 
+
+/**
+ * TUS Study Group Finder Project
+ * File: Contact.kt
+ * Description: Provides a form for users to send inquiries or messages. Validates user input (name, email, message)
+ *              and sends the data to Firebase Firestore for storage.
+ * Author: Kristers Rakstins - K00273773
+ */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContactUsScreen(navController: NavController, vm: IgViewModel) {
+fun Contact(navController: NavController, vm: IgViewModel) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }

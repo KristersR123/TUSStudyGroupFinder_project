@@ -33,6 +33,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tusstudygroupfinder_project.IgViewModel
 
+/**
+ * TUS Study Group Finder Project
+ * File: GroupDetailsScreen.kt
+ * Description: Displays detailed information about a selected group, such as its name and course.
+ *              Allows users to invite other users to the group and provides an option to leave the group.
+ * Author: Kristers Rakstins - K00273773
+ */
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

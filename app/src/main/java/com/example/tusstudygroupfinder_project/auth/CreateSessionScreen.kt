@@ -39,6 +39,15 @@ import com.example.tusstudygroupfinder_project.DestinationScreen
 import com.example.tusstudygroupfinder_project.IgViewModel
 import com.example.tusstudygroupfinder_project.R
 
+
+/**
+ * TUS Study Group Finder Project
+ * File: CreateSessionScreen.kt
+ * Description: Enables users to create a study session with inputs for title, date, time, location, and description.
+ *              Users can choose predefined room locations or input a custom link.
+ * Author: Kristers Rakstins - K00273773
+ */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateSessionScreen(navController: NavController, vm: IgViewModel, groupId: String ) {

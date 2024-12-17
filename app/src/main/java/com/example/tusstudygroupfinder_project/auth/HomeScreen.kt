@@ -41,6 +41,15 @@ import com.example.tusstudygroupfinder_project.IgViewModel
 import com.example.tusstudygroupfinder_project.R
 
 
+/**
+ * TUS Study Group Finder Project
+ * File: HomeScreen.kt
+ * Description: Displays the user's home screen with options to view groups, sessions, and other navigational buttons.
+ *  *              Integrates room locations, Google Maps, and Teams meeting links.
+ * Author: Kristers Rakstins - K00273773
+ */
+
+
 @Composable
 fun HomeScreen(navController: NavController, vm: IgViewModel, groupId: String) {
     var userGroups by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
@@ -310,7 +319,7 @@ fun HomeScreen(navController: NavController, vm: IgViewModel, groupId: String) {
                         )
                     }
 
-                    // User Button
+                    // Public Groups
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
@@ -329,7 +338,7 @@ fun HomeScreen(navController: NavController, vm: IgViewModel, groupId: String) {
                         )
                     }
 
-                    // Settings Button
+                    // Contact Us Button
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier

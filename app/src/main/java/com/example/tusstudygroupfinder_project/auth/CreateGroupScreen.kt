@@ -40,6 +40,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tusstudygroupfinder_project.IgViewModel
 
+/**
+ * TUS Study Group Finder Project
+ * File: CreateGroupScreen.kt
+ * Description: Allows users to create new study groups. Provides options for group name, course selection,
+ *              and group visibility (public/private).
+ * Author: Kristers Rakstins - K00273773
+ */
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateGroupScreen(navController: NavController, vm: IgViewModel) {

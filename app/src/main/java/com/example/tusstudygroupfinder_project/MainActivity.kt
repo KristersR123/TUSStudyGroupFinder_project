@@ -15,7 +15,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.tusstudygroupfinder_project.auth.ContactUsScreen
+import com.example.tusstudygroupfinder_project.auth.Contact
 import com.example.tusstudygroupfinder_project.auth.CreateGroupScreen
 import com.example.tusstudygroupfinder_project.auth.CreateSessionScreen
 import com.example.tusstudygroupfinder_project.auth.GroupDetailsScreen
@@ -29,6 +29,15 @@ import com.example.tusstudygroupfinder_project.main.NotificationMessage
 import com.example.tusstudygroupfinder_project.ui.theme.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.String
+
+/**
+ * TUS Study Group Finder Project
+ * File: MainActivity.kt
+ * Description: Entry point for the application. Handles navigation and initializes the UI
+ *              using Jetpack Compose and Dagger Hilt for dependency injection.
+ * Author: Kristers Rakstins - K00273773
+ * Copied From Last Year's Project (Tus Campus Connect)
+ */
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -62,14 +71,13 @@ sealed class DestinationScreen(val route: String) {
     object Home: DestinationScreen("home/{groupId}")
     object Event: DestinationScreen("event")
     object TimeTable: DestinationScreen("timetable")
-    object Contact: DestinationScreen("contact")
     object GroupScreen: DestinationScreen("groupscreen")
     object InviteMembers: DestinationScreen("InviteMembersScreen/{groupId}")
     object SelectGroupSession: DestinationScreen("selectgroup")
     object CreateSession : DestinationScreen("CreateSessionScreen/{groupId}")
     object GroupDetailsScreen: DestinationScreen("groupDetails/{groupId}")
     object PublicGroupsScreen: DestinationScreen("publicGroups")
-    object ContactUsScreen: DestinationScreen("contactUs")
+    object Contact: DestinationScreen("contactUs")
 }
 
 // Composable function for the main authentication app
@@ -82,7 +90,7 @@ fun AuthenticationApp() {
     // Create a NavController to manage navigation within the app
     val navController = rememberNavController()
 
-    // Initialize Room Database Test
+    // Initialised Room Database Test
     TestRoomDatabase(vm)
 
     // Display notifications using the NotificationMessage composable
@@ -127,7 +135,7 @@ fun AuthenticationApp() {
             PublicGroupsScreen(navController = navController, vm = vm)
         }
         composable("contactUs") {
-            ContactUsScreen(navController = navController, vm = vm)
+            Contact(navController = navController, vm = vm)
         }
 
 //        composable(DestinationScreen.Contact.route){
